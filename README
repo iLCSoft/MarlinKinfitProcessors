@@ -1,7 +1,8 @@
-MarlinKinfit
-------------
+MarlinKinfitProcessors
+------------------------
 
-Kinematic fitting library for Marlin.
+Example processors for MarlinKinfit
+
 
 Currently two examples are available: 
 
@@ -41,5 +42,5 @@ https://www.desy.de/~blist/kinfit/doc/html/
 and in the LCNotes LC-TOOL-2009-001 and LC-TOOL-2009-004 available from
 http://www-flc.desy.de/lcnotes/
 
-26.11.2014 Jenny List
+18.11.2015 Jenny List
 
