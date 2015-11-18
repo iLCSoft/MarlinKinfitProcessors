@@ -6,7 +6,7 @@ CMAKE_MINIMUM_REQUIRED(VERSION 2.6 FATAL_ERROR)
 
 
 # project name
-PROJECT( MarlinKinfit )
+PROJECT( MarlinKinfitProcessors )
 
 
 # project version
@@ -28,6 +28,10 @@ FIND_PACKAGE( Marlin 1.0 REQUIRED ) # minimum required Marlin version
 INCLUDE_DIRECTORIES( ${Marlin_INCLUDE_DIRS} )
 LINK_LIBRARIES( ${Marlin_LIBRARIES} )
 ADD_DEFINITIONS( ${Marlin_DEFINITIONS} )
+
+FIND_PACKAGE( MarlinKinfit REQUIRED )
+INCLUDE_DIRECTORIES( ${MarlinKinfit_INCLUDE_DIRS} )
+LINK_LIBRARIES( ${MarlinKinfit_LIBRARIES} )
 
 FIND_PACKAGE( CLHEP REQUIRED )
 INCLUDE_DIRECTORIES( ${CLHEP_INCLUDE_DIRS} )
@@ -90,5 +94,5 @@ INSTALL_SHARED_LIBRARY( ${PROJECT_NAME} DESTINATION lib )
 DISPLAY_STD_VARIABLES()
 
 # generate and install following configuration files
-GENERATE_PACKAGE_CONFIGURATION_FILES( MarlinKinfitConfig.cmake MarlinKinfitConfigVersion.cmake MarlinKinfitLibDeps.cmake )
+GENERATE_PACKAGE_CONFIGURATION_FILES( MarlinKinfitProcessorsConfig.cmake MarlinKinfitProcessorsConfigVersion.cmake MarlinKinfitProcessorsLibDeps.cmake )
 
