@@ -282,7 +282,7 @@ void TopTester::processEvent( LCEvent * evt ) {
 
     hFitProb = 
       AIDAProcessor::histogramFactory(this)->
-      createHistogram1D( "hFitProb", "fit probability", 1000, 0., 1. ) ; 
+      createHistogram1D( "hFitProb", "fit probability", 100, 0., 1. ) ; 
 
     hNIt = 
       AIDAProcessor::histogramFactory(this)->
@@ -323,25 +323,25 @@ void TopTester::processEvent( LCEvent * evt ) {
 
     hPxConstStop = 
       AIDAProcessor::histogramFactory(this)->
-      createHistogram1D( "hPxConstStop", "final value of Px constraint", 200, -50., 50. ) ;    
+      createHistogram1D( "hPxConstStop", "final value of Px constraint", 200, -5., 5. ) ;    
     hPyConstStop = 
       AIDAProcessor::histogramFactory(this)->
-      createHistogram1D( "hPyConstStop", "final value of Py constraint", 200, -50., 50. ) ;    
+      createHistogram1D( "hPyConstStop", "final value of Py constraint", 200, -5., 5. ) ;    
     hPzConstStop = 
       AIDAProcessor::histogramFactory(this)->
-      createHistogram1D( "hPzConstStop", "final value of Pz constraint", 200, -50., 50. ) ;    
+      createHistogram1D( "hPzConstStop", "final value of Pz constraint", 200, -5., 5. ) ;    
     hEConstStop = 
       AIDAProcessor::histogramFactory(this)->
-      createHistogram1D( "hEConstStop", "final value of E constraint", 200, -50., 50. ) ;    
+      createHistogram1D( "hEConstStop", "final value of E constraint", 200, -5., 5. ) ;    
     hMW1ConstStop = 
       AIDAProcessor::histogramFactory(this)->
-      createHistogram1D( "hMW1ConstStop", "final value of MW1 constraint", 200, -50., 50. ) ;    
+      createHistogram1D( "hMW1ConstStop", "final value of MW1 constraint", 200, -5., 5. ) ;    
     hMW2ConstStop = 
       AIDAProcessor::histogramFactory(this)->
-      createHistogram1D( "hMW2ConstStop", "final value of MW2 constraint", 200, -50., 50. ) ;    
+      createHistogram1D( "hMW2ConstStop", "final value of MW2 constraint", 200, -5., 5. ) ;    
     hMConstStop = 
       AIDAProcessor::histogramFactory(this)->
-      createHistogram1D( "hMConstStop", "final value of top mass constraint", 200, -50., 50. ) ;    
+      createHistogram1D( "hMConstStop", "final value of top mass constraint", 200, -5., 5. ) ;    
 
     hDistEJetOK = 
       AIDAProcessor::histogramFactory(this)->
