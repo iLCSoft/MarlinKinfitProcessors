@@ -42,7 +42,7 @@
 <!--/nfs/dust/ilc/group/ild/dbd-data/500/4f_6/E500-TDR_ws.P4f_ww_h.Gwhizard-1_95.eR.pL.I250008.001/SGVDST_E500-TDR_ws.P4f_ww_h.Gwhizard-1_95.eR.pL.I250008.001.slcio-->
  </parameter>
   <!-- limit the number of processed records (run+evt): -->  
-  <parameter name="MaxRecordNumber" value="0" />  
+  <parameter name="MaxRecordNumber" value="100" />  
   <parameter name="SkipNEvents" value="0" />  
   <parameter name="SupressCheck" value="false" />  
   <parameter name="GearXMLFile">GearOutput_ILD_o1_v05.xml</parameter>  
