@@ -34,6 +34,9 @@ of the 6 final-state fermions are smeared with the same resolutions as
 used in the fit, and the correct jet pairing is cheated. This comes
 handy for testing further developments of the fit engines, or of new
 types of fit objects, contraints etc. 
+
+- SimpleVertex: this performs a simple space-point fit of two charged tracks to a single vertex.
+It assumes events with two tracks (e.g. the single k0short events in example_data/kaon0S_DST.slcio)
   
 Further information about the fit engine and the user interface provided 
 in MarlinKinfit can be found at 
