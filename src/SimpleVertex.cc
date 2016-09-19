@@ -14,6 +14,7 @@
 #include "TwoVector.h"
 #include "BaseHardConstraint.h"
 #include "VertexFitObject.h"
+#include "TextTracer.h"
 
 using namespace lcio ;
 using namespace marlin ;
@@ -40,7 +41,10 @@ void SimpleVertexProcessor::processRunHeader( LCRunHeader* run) {
 
 void SimpleVertexProcessor::processEvent( LCEvent * evt ) {
 
+  TextTracer tracer (std::cout);
+  
   _opalFit->reset();
+  _opalFit->setTracer (tracer);
 
   // designed to work with single K0short events
   // fit tracks from kshort decays to a vertex
@@ -78,6 +82,9 @@ void SimpleVertexProcessor::processEvent( LCEvent * evt ) {
       vertexFO->setParam(0,0.,false,false); // measured=false, fixed=false
       vertexFO->setParam(1,0.,false,false);
       vertexFO->setParam(2,0.,false,false);
+      vertexFO->setError(0,100.); 
+      vertexFO->setError(1,100.);
+      vertexFO->setError(2,100.);
 
       // add tracks to vertex      
       vertexFO->addTrack( tfo[0], false, true ); // inbound=false, measured=true
@@ -94,7 +101,7 @@ void SimpleVertexProcessor::processEvent( LCEvent * evt ) {
 
       // prepare for fit
       vertexFO->initForFit();
-
+      
       // do the fit       
       _opalFit->fit();
       
@@ -106,6 +113,20 @@ void SimpleVertexProcessor::processEvent( LCEvent * evt ) {
       int    nit =   _opalFit->getIterations();
       
       cout << "done : ierr " << ierr << " fitProb " << fprob << " chisq " << chi2 << " nDOF " << dof << " nIter " << nit << endl;
+
+// Vertex FO error matrix
+      for (unsigned int i=0; i<3; i++){
+          for (unsigned int j=i; j<3; j++){
+               cout << "Cov " << i << " " << j << " " << vertexFO->getCov(i,j) << endl;
+          }
+      }
+
+      ThreeVector vertex;
+      vertexFO->getVertexEx(vertex);
+      cout << "Vertex coordinates " << vertex.getX() << " " << vertex.getY() << " " << vertex.getZ() << endl;
+      cout << "           errors  " << vertexFO->getError(0) << " " << vertexFO->getError(1) << " " << vertexFO->getError(2) << endl;
+
+
 
     }
 
