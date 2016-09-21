@@ -46,7 +46,8 @@
   <parameter name="SkipNEvents" value="0" />  
   <parameter name="SupressCheck" value="false" />  
   <parameter name="GearXMLFile">GearOutput_ILD_o1_v05.xml</parameter>  
-  <parameter name="Verbosity" options="VERBOSE,DEBUG,MESSAGE,WARNING,ERROR,SILENT">ERROR</parameter> 
+  <!-- verbosity level - DEBUG only works if compiled in debug mode! -->
+  <parameter name="Verbosity" options="DEBUG0-4,MESSAGE0-4,WARNING0-4,ERROR0-4,SILENT"> MESSAGE  </parameter>
  </global>
 
  <processor name="MyAIDAProcessor" type="AIDAProcessor">
@@ -145,7 +146,8 @@
   <parameter name="traceall" type="bool"> false </parameter>
   <!-- number of individual event to be traced (default: -1) -->
   <parameter name="ievttrace" type="int"> -1 </parameter>
-  <parameter name="Verbosity" options="VERBOSE,DEBUG,MESSAGE,WARNING,ERROR,SILENT">WARNING</parameter> 
+  <!-- verbosity level - DEBUG only works if compiled in debug mode! -->
+  <parameter name="Verbosity" options="DEBUG0-4,MESSAGE0-4,WARNING0-4,ERROR0-4,SILENT"> MESSAGE  </parameter>
 </processor>
 
 </marlin>

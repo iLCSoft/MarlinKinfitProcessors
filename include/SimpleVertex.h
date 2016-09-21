@@ -35,6 +35,8 @@ class SimpleVertexProcessor : public Processor {
 
  protected:
 
+  bool _traceall;
+  int _ievttrace; 
   OPALFitterGSL* _opalFit;
 
 };
