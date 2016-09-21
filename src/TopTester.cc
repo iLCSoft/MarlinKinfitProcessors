@@ -19,7 +19,8 @@
 #include "NewFitterGSL.h"
 #include "TextTracer.h"
 #include "NewtonFitterGSL.h"
-#include "MassConstraint.h"
+// #include "MassConstraint.h"
+// #include "SoftGaussMassConstraint.h"
 #include "TopEventILC.h"
 
 using namespace marlin ;
@@ -517,7 +518,7 @@ void TopTester::processEvent( LCEvent * evt ) {
    
   for (int ievt = 0; ievt < _ntoy; ievt++) { 
   
-     message<DEBUG>( log()  << "start to process toy event number " << ievt ) ;
+     message<MESSAGE>( log()  << "start to process toy event number " << ievt ) ;
      
      double startmassW1 = 0., startmassW2 = 0.;
      double startmasstop1 = 0., startmasstop2 = 0.;
@@ -530,12 +531,12 @@ void TopTester::processEvent( LCEvent * evt ) {
        
      startmassW1 = topevent->getW1Mass();
      startmassW2 = topevent->getW2Mass();
-     message<DEBUG>( log()  << "start mass of W 1: " << startmassW1 ) ;
-     message<DEBUG>( log()  << "start mass of W 2: " << startmassW2 ) ;
+     message<MESSAGE>( log()  << "start mass of W 1: " << startmassW1 ) ;
+     message<MESSAGE>( log()  << "start mass of W 2: " << startmassW2 ) ;
      startmasstop1 = topevent->getTop1Mass();
      startmasstop2 = topevent->getTop2Mass();
-     message<DEBUG>( log()  << "start mass of top 1: " << startmasstop1 ) ;
-     message<DEBUG>( log()  << "start mass of top 2: " << startmasstop2 ) ;
+     message<MESSAGE>( log()  << "start mass of top 1: " << startmasstop1 ) ;
+     message<MESSAGE>( log()  << "start mass of top 2: " << startmasstop2 ) ;
                      
 #ifdef MARLIN_USE_AIDA
      hRecTop1MassNoFitAll->fill( startmasstop1 ) ;
@@ -558,6 +559,7 @@ void TopTester::processEvent( LCEvent * evt ) {
      else {
        // OPALFitter has no method setDebug !
        pfitter = new OPALFitterGSL();
+       (dynamic_cast<OPALFitterGSL*>(pfitter))->setDebug (debug);
      }
      BaseFitter &fitter = *pfitter;
   
@@ -582,14 +584,14 @@ void TopTester::processEvent( LCEvent * evt ) {
      double chi2 = fitter.getChi2();
      int nit = fitter.getIterations();
 
-     message<DEBUG>( log() << "fit probability = " << prob ) ;  
-     message<DEBUG>( log() << "fit chi2 = " << chi2  ) ; 
-     message<DEBUG>( log() << "error code: " << ierr ) ;
+     message<MESSAGE>( log() << "fit probability = " << prob ) ;  
+     message<MESSAGE>( log() << "fit chi2 = " << chi2  ) ; 
+     message<MESSAGE>( log() << "error code: " << ierr ) ;
                                   
-     message<DEBUG>( log()  << "final mass of W 1: " << topevent->getW1Mass() ) ;
-     message<DEBUG>( log()  << "final mass of W 2: " << topevent->getW2Mass() ) ;
-     message<DEBUG>( log()  << "final mass of top 1: " << topevent->getTop1Mass() ) ;
-     message<DEBUG>( log()  << "final mass of top 2: " << topevent->getTop2Mass() ) ;
+     message<MESSAGE>( log()  << "final mass of W 1: " << topevent->getW1Mass() ) ;
+     message<MESSAGE>( log()  << "final mass of W 2: " << topevent->getW2Mass() ) ;
+     message<MESSAGE>( log()  << "final mass of top 1: " << topevent->getTop1Mass() ) ;
+     message<MESSAGE>( log()  << "final mass of top 2: " << topevent->getTop2Mass() ) ;
        
      bool usesigma_evt = true;
                   
@@ -620,7 +622,7 @@ void TopTester::processEvent( LCEvent * evt ) {
        hMW2ConstStop->fill (topevent->getW2Constraint().getValue()); 
        hMConstStop->fill (topevent->getTopConstraint().getValue()); 
        
-       message<DEBUG>( log() << "looping over FOs " ) ;
+       message<MESSAGE>( log() << "looping over FOs " ) ;
        for (int ifo = 0; ifo < 6; ifo++){
          double errfit, errmea, sigma; 
          double truth, start, fitted;
@@ -640,8 +642,8 @@ void TopTester::processEvent( LCEvent * evt ) {
              sigma = errfit*errfit;     
            }  
            
-           message<DEBUG>( log() << " sigma =  " << sigma << " for ifo " << ifo 
-                                 << " in evt " << ievt << ", errmea =  " << errmea << ", errfit = " << errfit ) ;
+           message<MESSAGE>( log() << " sigma =  " << sigma << " for ifo " << ifo 
+                                   << " in evt " << ievt << ", errmea =  " << errmea << ", errfit = " << errfit ) ;
            if (sigma > 0) {
              sigma = sqrt(sigma);
              usesigma[ipar] = true;
@@ -669,9 +671,9 @@ void TopTester::processEvent( LCEvent * evt ) {
            pull[ipar] = dist[ipar]/sigma;
            pulltrue[ipar] = disttrue[ipar]/errfit;
            pullsmear[ipar] = (start - truth)/errmea;
-           message<DEBUG>( log() << " pull =  " << pull[ipar] << " for ifo " << ifo                                
-                                 << " in evt " << ievt << ", pulltrue =  " << pulltrue[ipar]                         
-                                 << ", delta = " << start - topevent->getFittedFitObject(ifo)->getParam(ipar) ) ;  
+           message<MESSAGE>( log() << " pull =  " << pull[ipar] << " for ifo " << ifo                                
+                                   << " in evt " << ievt << ", pulltrue =  " << pulltrue[ipar]                         
+                                   << ", delta = " << start - topevent->getFittedFitObject(ifo)->getParam(ipar) ) ;  
                                    
          }  
          if ( !_semileptonic || ifo < 4 ) {

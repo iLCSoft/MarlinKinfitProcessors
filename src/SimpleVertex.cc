@@ -98,7 +98,12 @@ void SimpleVertexProcessor::processEvent( LCEvent * evt ) {
   _opalFit->reset();
      
   TextTracer tracer (std::cout);
-  if (evt->getEventNumber() == _ievttrace || _traceall) _opalFit->setTracer (tracer);
+  if (evt->getEventNumber() == _ievttrace || _traceall) {
+    _opalFit->setTracer (tracer);
+  }
+  else {
+    _opalFit->setTracer (0);
+  }  
   
   // designed to work with single K0short events
   // fit tracks from kshort decays to a vertex
