@@ -146,6 +146,12 @@ void ZH5CFit::processEvent( LCEvent * evt ) {
   static AIDA::IHistogram1D* hJetMass ;    
   static AIDA::IHistogram1D* hFitError;    
   static AIDA::IHistogram1D* hFitErrorBest;    
+  static AIDA::IHistogram1D* hPullEJetOK;    
+  static AIDA::IHistogram1D* hPullThJetOK;    
+  static AIDA::IHistogram1D* hPullPhJetOK;    
+  static AIDA::IHistogram1D* hPullEJetBest;    
+  static AIDA::IHistogram1D* hPullThJetBest;    
+  static AIDA::IHistogram1D* hPullPhJetBest;    
              
     message<MESSAGE>( log() 
 		      << " processing event " << evt->getEventNumber() 
@@ -199,19 +205,37 @@ void ZH5CFit::processEvent( LCEvent * evt ) {
     if (_ifitter == 1) {
       hFitError = 
         AIDAProcessor::histogramFactory(this)->
-        createHistogram1D( "hFitError", "Error flag", 100, -0.5, 99.5 ) ; 
+        createHistogram1D( "hFitError", "Error flag", 100, -1.5, 99.5 ) ; 
       hFitErrorBest = 
         AIDAProcessor::histogramFactory(this)->
-        createHistogram1D( "hFitErrorBest", "Error flag", 100, -0.5, 99.5 ) ; 
+        createHistogram1D( "hFitErrorBest", "Error flag", 100, -1.5, 98.5 ) ; 
     }
     else {    
       hFitError = 
         AIDAProcessor::histogramFactory(this)->
-        createHistogram1D( "hFitError", "Error flag", 10, -0.5, 9.5 ) ; 
+        createHistogram1D( "hFitError", "Error flag", 11, -1.5, 9.5 ) ; 
       hFitErrorBest = 
         AIDAProcessor::histogramFactory(this)->
-        createHistogram1D( "hFitErrorBest", "Error flag", 10, -0.5, 9.5 ) ; 
+        createHistogram1D( "hFitErrorBest", "Error flag", 11, -1.5, 9.5 ) ; 
     }    
+    hPullEJetOK = 
+      AIDAProcessor::histogramFactory(this)->
+      createHistogram1D( "hPullEJetOK", "pull of jet energy", 100, -5., 5. ) ;    
+    hPullThJetOK = 
+      AIDAProcessor::histogramFactory(this)->
+      createHistogram1D( "hPullThJetOK", "pull of jet theta", 100, -5., 5. ) ;    
+    hPullPhJetOK = 
+      AIDAProcessor::histogramFactory(this)->
+      createHistogram1D( "hPullPhJetOK", "pull of jet phi", 100, -5., 5. ) ;    
+    hPullEJetBest = 
+      AIDAProcessor::histogramFactory(this)->
+      createHistogram1D( "hPullEJetBest", "pull of jet energy", 100, -5., 5. ) ;    
+    hPullThJetBest = 
+      AIDAProcessor::histogramFactory(this)->
+      createHistogram1D( "hPullThJetBest", "pull of jet theta", 100, -5., 5. ) ;    
+    hPullPhJetBest = 
+      AIDAProcessor::histogramFactory(this)->
+      createHistogram1D( "hPullPhJetBest", "pull of jet phi", 100, -5., 5. ) ;    
 
   }
 
@@ -347,6 +371,11 @@ void ZH5CFit::processEvent( LCEvent * evt ) {
        const int NJETS = 4;
        message<MESSAGE>( log()  << "*j1" << *j1  << "*j2" << *j2  << "*j3" << *j3  << "*j4" << *j4  ) ;
        
+       // these don't get changed by the fit -> to obtain start values later!
+       JetFitObject startjets[NJETS] = {*j1, *j2, *j3, *j4};
+       for (int i = 0; i < NJETS; ++i)
+         message<MESSAGE>( log()  << "startjets[ " << i << "]: " << startjets[i]  ) ;
+ 
        // these get changed by the fit -> reset after each permutation!
        JetFitObject fitjets[NJETS] = {*j1, *j2, *j3, *j4};
        for (int i = 0; i < NJETS; ++i)
@@ -517,6 +546,31 @@ void ZH5CFit::processEvent( LCEvent * evt ) {
            hNItAll->fill( nit ) ;
            hRecHMassAll->fill( h.getMass(1) ) ;
 #endif
+           double pull[3][4];
+           // require successfull error calculation for pulls!
+           if (ierr == 0) {
+             for (int ifo = 0; ifo < 4; ifo++){
+               double start, fitted;
+               double errfit, errmea, sigma; 
+               for (int ipar = 0; ipar < 3; ipar++) {
+                 fitted = fitjets[ifo].getParam(ipar);  
+                 start = startjets[ifo].getParam(ipar);  
+                 errfit = fitjets[ifo].getError(ipar);  
+                 errmea = startjets[ifo].getError(ipar);  
+                 sigma = errmea*errmea-errfit*errfit;
+                 if (sigma > 0) {
+                  sigma = sqrt(sigma);
+                  pull[ipar][ifo] = (fitted - start)/sigma;
+                 }
+                 else {
+                  pull[ipar][ifo] = -4.5;
+                 }
+               }
+               hPullEJetOK->fill (pull[0][ifo]);
+               hPullThJetOK->fill(pull[1][ifo]);
+               hPullPhJetOK->fill(pull[2][ifo]);
+             }
+           }      
 //           if (prob > bestprob && h.getMass(1) > 70 && w.getMass(1) < 150) {
            if (prob > bestprob) {
              bestprob = prob;
@@ -525,7 +579,24 @@ void ZH5CFit::processEvent( LCEvent * evt ) {
              bestmassH = h.getMass(1);
              beststartmassZ = startmassZ;
              beststartmassH = startmassH;
-             bestphotonenergy = photon->getE();
+             bestphotonenergy = photon->getE();     
+             if (ierr == 0) {
+               for (int ifo = 0; ifo < 4; ifo++){
+                 hPullEJetBest->fill (pull[0][ifo]);
+                 hPullThJetBest->fill(pull[1][ifo]);
+                 hPullPhJetBest->fill(pull[2][ifo]);
+               }
+             }
+             else {
+               message<WARNING>( log() << " ERROR CALCULATION FAILED for best permutation " 
+                                   << " in event " << evt->getEventNumber() 
+                                   << " for permutation " << iperm ) ;
+               for (int ifo = 0; ifo < 4; ifo++){
+                 hPullEJetBest->fill (-6.);
+                 hPullThJetBest->fill(-6.);
+                 hPullPhJetBest->fill(-6.);
+               }
+             }
            }
          }
          else {
