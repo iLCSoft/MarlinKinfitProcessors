@@ -33,7 +33,7 @@
   <!-- compression of output file?   0: false >0: true (default) -->
   <parameter name="Compress" type="int"> 1 </parameter>
   <!-- filename without extension-->
-  <parameter name="FileName" type="string"> TopTester_OPALfitter_semilep_1 </parameter>
+  <parameter name="FileName" type="string"> TopTester_OPALfitter_semilep_hard_10000 </parameter>
   <!-- type of output file xml (default) or root ( only OpenScientist)-->
   <parameter name="FileType" type="string"> root </parameter>
   <!-- verbosity level - DEBUG only works if compiled in debug mode! -->
@@ -45,19 +45,21 @@
   <!-- center-of-mass energy (default: 500.) -->
   <parameter name="ECM" type="float"> 500. </parameter>
   <!-- number of toy events (default: 200) -->
-  <parameter name="ntoy" type="int"> 1 </parameter>
+  <parameter name="ntoy" type="int"> 10000 </parameter>
+  <!-- set true if mass constraints should be soft (default: false) -->
+  <parameter name="softmasses" type="bool"> false </parameter>
   <!-- set true if semi-leptonic ttbar events should be used (default: false) -->
-  <parameter name="semileptonic" type="bool"> false </parameter>
+  <parameter name="semileptonic" type="bool"> true </parameter>
   <!-- set true if lepton should be parametrised at JetFitObject (default: false) -->
   <parameter name="leptonasjet" type="bool"> false </parameter>
   <!-- 0 = OPALFitter, 1 = NewFitter, 2 = NewtonFitter (default: 0) -->
-  <parameter name="fitter" type="int"> 1 </parameter>
+  <parameter name="fitter" type="int"> 0 </parameter>
   <!-- set true if every event should be traced (default: false) -->
   <parameter name="traceall" type="bool"> false </parameter>
   <!-- number of individual toy event to be traced (default: -1) -->
-  <parameter name="ievttrace" type="int"> 0 </parameter>
+  <parameter name="ievttrace" type="int"> 568 </parameter>
   <!-- verbosity level - DEBUG only works if compiled in debug mode! -->
-  <parameter name="Verbosity" options="DEBUG0-4,MESSAGE0-4,WARNING0-4,ERROR0-4,SILENT"> MESSAGE  </parameter>
+  <parameter name="Verbosity" options="DEBUG0-4,MESSAGE0-4,WARNING0-4,ERROR0-4,SILENT"> WARNING  </parameter>
 </processor>
 
 </marlin>

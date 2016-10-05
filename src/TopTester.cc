@@ -14,13 +14,10 @@
 
 #include <CLHEP/Vector/LorentzVector.h>
 #include "JetFitObject.h"
-//#include "PConstraint.h"
 #include "OPALFitterGSL.h"
 #include "NewFitterGSL.h"
 #include "TextTracer.h"
 #include "NewtonFitterGSL.h"
-// #include "MassConstraint.h"
-// #include "SoftGaussMassConstraint.h"
 #include "TopEventILC.h"
 
 using namespace marlin ;
@@ -48,6 +45,11 @@ TopTester::TopTester() : Processor("TopTester") {
                               "number of toy events",
                               _ntoy,
                               (int)200);
+                              
+  registerProcessorParameter( "softmasses" ,
+                              "set true if mass constraints should be soft",
+                              _softmasses,
+                              (bool)false);
                               
   registerProcessorParameter( "semileptonic" ,
                               "set true if semi-leptonic ttbar events should be used",
@@ -83,6 +85,7 @@ void TopTester::init() {
 
   // usually a good idea to
   printParameters() ;
+  topevent->softmasses = _softmasses;
   topevent->leptonic = _semileptonic;
   topevent->leptonasjet = _leptonasjet;
 
@@ -524,7 +527,7 @@ void TopTester::processEvent( LCEvent * evt ) {
      double startmasstop1 = 0., startmasstop2 = 0.;
      
      int debug = 0;
-     if (ievt == _ievttrace || _traceall) debug = 4;
+     if (ievt == _ievttrace || _traceall) debug = 10;
      topevent->setDebug (debug);
           
      topevent->genEvent();
@@ -557,7 +560,7 @@ void TopTester::processEvent( LCEvent * evt ) {
        (dynamic_cast<NewtonFitterGSL*>(pfitter))->setDebug (debug);
      }  
      else {
-       // OPALFitter has no method setDebug !
+       // OPALFitter now also has method setDebug !
        pfitter = new OPALFitterGSL();
        (dynamic_cast<OPALFitterGSL*>(pfitter))->setDebug (debug);
      }
@@ -568,13 +571,13 @@ void TopTester::processEvent( LCEvent * evt ) {
            
      // fill start values of constraints
 #ifdef MARLIN_USE_AIDA
-     hPxConstStart->fill (topevent->getPxConstraint().getValue()); 
-     hPyConstStart->fill (topevent->getPyConstraint().getValue()); 
-     hPzConstStart->fill (topevent->getPzConstraint().getValue()); 
-     hEConstStart->fill (topevent->getEConstraint().getValue()); 
-     hMW1ConstStart->fill (topevent->getW1Constraint().getValue()); 
-     hMW2ConstStart->fill (topevent->getW2Constraint().getValue()); 
-     hMConstStart->fill (topevent->getTopConstraint().getValue()); 
+     hPxConstStart->fill (topevent->getPxConstraint()->getValue()); 
+     hPyConstStart->fill (topevent->getPyConstraint()->getValue()); 
+     hPzConstStart->fill (topevent->getPzConstraint()->getValue()); 
+     hEConstStart->fill (topevent->getEConstraint()->getValue()); 
+     hMW1ConstStart->fill (topevent->getW1Constraint()->getValue()); 
+     hMW2ConstStart->fill (topevent->getW2Constraint()->getValue()); 
+     hMConstStart->fill (topevent->getTopConstraint()->getValue()); 
 #endif
 
      int ierr = topevent->fitEvent(fitter);
@@ -614,13 +617,13 @@ void TopTester::processEvent( LCEvent * evt ) {
        hRecWMass->fill( 0.5*(topevent->getW1Mass()+topevent->getW2Mass()) ) ;
        
        // fill final values of constraints
-       hPxConstStop->fill (topevent->getPxConstraint().getValue()); 
-       hPyConstStop->fill (topevent->getPyConstraint().getValue()); 
-       hPzConstStop->fill (topevent->getPzConstraint().getValue()); 
-       hEConstStop->fill (topevent->getEConstraint().getValue()); 
-       hMW1ConstStop->fill (topevent->getW1Constraint().getValue()); 
-       hMW2ConstStop->fill (topevent->getW2Constraint().getValue()); 
-       hMConstStop->fill (topevent->getTopConstraint().getValue()); 
+       hPxConstStop->fill (topevent->getPxConstraint()->getValue()); 
+       hPyConstStop->fill (topevent->getPyConstraint()->getValue()); 
+       hPzConstStop->fill (topevent->getPzConstraint()->getValue()); 
+       hEConstStop->fill (topevent->getEConstraint()->getValue()); 
+       hMW1ConstStop->fill (topevent->getW1Constraint()->getValue()); 
+       hMW2ConstStop->fill (topevent->getW2Constraint()->getValue()); 
+       hMConstStop->fill (topevent->getTopConstraint()->getValue()); 
        
        message<MESSAGE>( log() << "looping over FOs " ) ;
        for (int ifo = 0; ifo < 6; ifo++){
