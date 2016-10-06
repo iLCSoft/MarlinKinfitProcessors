@@ -40,14 +40,15 @@ ZH5CFit aZH5CFit ;
 // function to define the jet energy resolution (in GeV)
 double ZH5CFit::JetEnergyResolution(double E)
 {
+  
   // examples here derived by Benjamin Hermberg from e+e- -> udsc:
+  // 1) default is 120%/sqrt(E), gives best convergence of 5C fit on e+e- -> udsc
+  double result = _errene*std::sqrt(E);
   
-  // 1) comparing jet-level to quark-level energies 
+  // 2) comparing jet-level to quark-level energies 
   //    (using MarlinReco/Analysis/RecoMCTruthLink/QuarkJetPairing.cc)
-  // double result = std::sqrt(pow(0.6908,2)*(E)+(pow(0.02596,2)*pow(E,2))); 
+  if (_errene == 0 ) result = std::sqrt(pow(0.6908,2)*(E)+(pow(0.02596,2)*pow(E,2))); 
   
-  // 2) 120%/sqrt(E), gives best convergence of 5C fit on e+e- -> udsc
-  double result = 1.2*std::sqrt(E);  
   return result;      
 }
 
@@ -79,6 +80,21 @@ ZH5CFit::ZH5CFit() : Processor("ZH5CFit") {
                               "Maximum possible energy for a single ISR photon",
                               _isrpzmax,
                               (float)225.);
+
+  registerProcessorParameter( "errene" ,
+                              "assumed energy resolution for jets as x/sqrt(E) - if 0, then parametrisation is used",
+                              _errene,
+                              (double)1.2);
+
+  registerProcessorParameter( "errtheta" ,
+                              "assumed theta resolution for jet axis",
+                              _errtheta,
+                              (double)0.1);
+
+  registerProcessorParameter( "errphi" ,
+                              "assumed phi resolution for jet axis",
+                              _errphi,
+                              (double)0.1);
 
   registerProcessorParameter( "fitter" ,
                               "0 = OPALFitter, 1 = NewFitter, 2 = NewtonFitter",
@@ -278,11 +294,6 @@ void ZH5CFit::processEvent( LCEvent * evt ) {
        JetFitObject* j3 = 0;
        JetFitObject* j4 = 0;
         
-       // angular resolutions - optimised for best convergence of 5C fit on e+e- -> udsc
-       double errtheta = 0.1;   //   100mrad
-       double errphi = 0.1;     //   100mrad
-       
-       
        ReconstructedParticle* jrps[4];
        
        for(int i=0; i< nJETS ; i++){
@@ -299,25 +310,25 @@ void ZH5CFit::processEvent( LCEvent * evt ) {
              lvec = HepLorentzVector ((j->getMomentum())[0],(j->getMomentum())[1],(j->getMomentum())[2],j->getEnergy()); 
              if (i == 0) { 
                j1 = new JetFitObject (lvec.e(), lvec.theta(), lvec.phi(),
-                  JetEnergyResolution(lvec.e()), errtheta, errphi, lvec.m());
+                  JetEnergyResolution(lvec.e()), _errtheta, _errphi, lvec.m());
                j1->setName("Jet1");
                message<MESSAGE>( log()  << " start four-vector of first  jet: " << *j1  ) ;
 	     }
              else if (i == 1) { 
                j2 = new JetFitObject (lvec.e(), lvec.theta(), lvec.phi(),
-                  JetEnergyResolution(lvec.e()), errtheta, errphi, lvec.m());
+                  JetEnergyResolution(lvec.e()), _errtheta, _errphi, lvec.m());
                j2->setName("Jet2");
                message<MESSAGE>( log() << " start four-vector of second  jet: " << *j2  ) ;
 	     }
              else if (i == 2) {
                j3 = new JetFitObject (lvec.e(), lvec.theta(), lvec.phi(),
-                  JetEnergyResolution(lvec.e()), errtheta, errphi, lvec.m());
+                  JetEnergyResolution(lvec.e()), _errtheta, _errphi, lvec.m());
                j3->setName("Jet3");
                message<MESSAGE>( log() << " start four-vector of third  jet: " << *j3  ) ;
 	     }
              else if (i == 3) { 
                j4 = new JetFitObject (lvec.e(), lvec.theta(), lvec.phi(),
-                  JetEnergyResolution(lvec.e()), errtheta, errphi, lvec.m());
+                  JetEnergyResolution(lvec.e()), _errtheta, _errphi, lvec.m());
                j4->setName("Jet4");
                message<MESSAGE>( log() << " start four-vector of forth  jet: " << *j4  ) ;
 	     }

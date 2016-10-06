@@ -66,12 +66,13 @@ class ZH5CFit : public Processor {
 
   /** Input collection name.
    */
-  std::string _jetcolName, _name,_OutputCollection ;
+  std::string _jetcolName, _name, _OutputCollection ;
   /** Input parameter: center of mass energy.
    */
   float _ecm, _isrpzmax;
   int _fitISR, _ifitter, _ievttrace;
   bool _traceall;
+  double _errene, _errtheta, _errphi;     
 
   double b, ISRPzMaxB;
 
