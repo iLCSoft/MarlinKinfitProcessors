@@ -83,9 +83,7 @@ class ZH5CFit : public Processor {
   int _nRun, _nEvt, nit;
  
   int bestperm, errorflag;
-  
-  TopEventILC* topevent;
- 
+   
 
   //output
   // TTree *outTree;

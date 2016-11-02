@@ -55,7 +55,7 @@ double ZH5CFit::JetEnergyResolution(double E)
 ZH5CFit::ZH5CFit() : Processor("ZH5CFit") {
   
   // modify processor description
-  _description = "ZH5CFit does a 5C fit on 4 jet events (Px, Py, Pz, E, M12 = M34 (for all three permutations))" ;
+  _description = "ZH5CFit does a 5C fit on 4 jet events (Px, Py, Pz, E, M12 = MZ (for all six permutations))" ;
   
 
   // register steering parameters: name, description, class-variable, default value
@@ -143,6 +143,9 @@ void ZH5CFit::processEvent( LCEvent * evt ) {
   // this gets called for every event 
   // usually the working horse ...
 
+  int debug = 0;
+  if ( evt->getEventNumber() == _ievttrace || _traceall) debug = 10;
+  
 #ifdef MARLIN_USE_AIDA
     
   // define a histogram pointer
@@ -214,7 +217,7 @@ void ZH5CFit::processEvent( LCEvent * evt ) {
       createHistogram1D( "hNItAll", "number of iterations", 200, 0, 200 ) ; 
     hPhotonEnergy = 
       AIDAProcessor::histogramFactory(this)->
-      createHistogram1D( "hPhotonEnergy", "ISR photon energy", 200, 0., 400. ) ; 
+      createHistogram1D( "hPhotonEnergy", "ISR photon energy", 250, 0., 250. ) ; 
     hJetMass = 
       AIDAProcessor::histogramFactory(this)->
       createHistogram1D( "hJetMass", "Jet Mass", 200, 0., 100. ) ; 
@@ -432,7 +435,7 @@ void ZH5CFit::processEvent( LCEvent * evt ) {
                               
          //MomentumConstraint pxc (1, 0);
          // crossing angle 14 mrad = 7/500
-         MomentumConstraint pxc (0, 1, 0, 0, 7.0);
+         MomentumConstraint pxc (0, 1, 0, 0, 3.5);
          pxc.setName("sum(p_x)");
          for (int i = 0; i < NJETS; ++i)
             pxc.addToFOList (*(permutedjets[i]));
@@ -493,15 +496,16 @@ void ZH5CFit::processEvent( LCEvent * evt ) {
          BaseFitter *pfitter;
          if (_ifitter == 1) {
            pfitter = new NewFitterGSL();
-           if (evt->getEventNumber()== _ievttrace || _traceall) (dynamic_cast<NewFitterGSL*>(pfitter))->setDebug (1);
+           if (evt->getEventNumber()== _ievttrace || _traceall) (dynamic_cast<NewFitterGSL*>(pfitter))->setDebug (debug);
          }
          else if (_ifitter == 2) {
            pfitter = new NewtonFitterGSL();
-           if (evt->getEventNumber()== _ievttrace || _traceall) (dynamic_cast<NewtonFitterGSL*>(pfitter))->setDebug (1);
+           if (evt->getEventNumber()== _ievttrace || _traceall) (dynamic_cast<NewtonFitterGSL*>(pfitter))->setDebug (debug);
          }
          else {
            // OPALFitter has no method setDebug !
            pfitter = new OPALFitterGSL();
+           if (evt->getEventNumber()== _ievttrace || _traceall) (dynamic_cast<OPALFitterGSL*>(pfitter))->setDebug (debug);
          }
          BaseFitter &fitter = *pfitter;
   
@@ -522,10 +526,10 @@ void ZH5CFit::processEvent( LCEvent * evt ) {
          //fitter.addConstraint (h);
 
          // initial value of Z mass constraint
-         if (fabs(startmassZ-91.2) < bestzvalue) {
+         if (fabs(startmassZ-91.2) + fabs(startmassH-125.) < bestzvalue) {
            chi2startmassZ = startmassZ;
            chi2startmassH = startmassH;
-           bestzvalue = fabs(startmassZ-91.2);
+           bestzvalue = fabs(startmassZ-91.2) + fabs(startmassH-125.);
          }
                   
          double prob = fitter.fit();
@@ -548,7 +552,7 @@ void ZH5CFit::processEvent( LCEvent * evt ) {
                       
          int ierr = fitter.getError();
          hFitError->fill( ierr ) ;
-         if (ierr < besterr) besterr = ierr;
+         if ((besterr > 0 && ierr < besterr) || ( besterr < 0 && ierr == 0)) besterr = ierr;
          
          // ierr == -1 only means that error calculation for fitted parameters failed!
          if (ierr <= 0) {

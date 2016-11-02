@@ -1,0 +1,18 @@
+####################################################################
+# MarlinKinfitProcessors package
+#
+# jenny.list@desy.de
+# 
+####################################################################
+
+Release Notes:
+
+ --------
+| v00-02 |   - new processor SimpleVertex to demonstrate vertexing 
+ --------    - added pull histograms to ZH5CFit and made resolutions steerable
+
+ --------
+| v00-01 |   - initial version splitting off from MarlinKinfit -
+ --------
+
+Contains the exmaple Marlin processors using MarlinKinfit
