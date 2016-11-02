@@ -14,12 +14,10 @@
 
 #include <CLHEP/Vector/LorentzVector.h>
 #include "JetFitObject.h"
-//#include "PConstraint.h"
 #include "OPALFitterGSL.h"
 #include "NewFitterGSL.h"
 #include "TextTracer.h"
 #include "NewtonFitterGSL.h"
-#include "MassConstraint.h"
 #include "TopEventILC.h"
 
 using namespace marlin ;
@@ -47,6 +45,11 @@ TopTester::TopTester() : Processor("TopTester") {
                               "number of toy events",
                               _ntoy,
                               (int)200);
+                              
+  registerProcessorParameter( "softmasses" ,
+                              "set true if mass constraints should be soft",
+                              _softmasses,
+                              (bool)false);
                               
   registerProcessorParameter( "semileptonic" ,
                               "set true if semi-leptonic ttbar events should be used",
@@ -82,6 +85,7 @@ void TopTester::init() {
 
   // usually a good idea to
   printParameters() ;
+  topevent->softmasses = _softmasses;
   topevent->leptonic = _semileptonic;
   topevent->leptonasjet = _leptonasjet;
 
@@ -166,26 +170,6 @@ void TopTester::processEvent( LCEvent * evt ) {
   static AIDA::IHistogram1D* hPullPhLepOK;    
   static AIDA::IHistogram1D* hPullPhNeuOK;
       
-  static AIDA::IHistogram1D* hDistEJetMea;    
-  static AIDA::IHistogram1D* hDistELepMea;    
-  static AIDA::IHistogram1D* hDistENeuMea;    
-  static AIDA::IHistogram1D* hDistThJetMea;    
-  static AIDA::IHistogram1D* hDistThLepMea;    
-  static AIDA::IHistogram1D* hDistThNeuMea;    
-  static AIDA::IHistogram1D* hDistPhJetMea;    
-  static AIDA::IHistogram1D* hDistPhLepMea;
-  static AIDA::IHistogram1D* hDistPhNeuMea;
-      
-  static AIDA::IHistogram1D* hPullEJetMea;    
-  static AIDA::IHistogram1D* hPullELepMea;    
-  static AIDA::IHistogram1D* hPullENeuMea;    
-  static AIDA::IHistogram1D* hPullThJetMea;    
-  static AIDA::IHistogram1D* hPullThLepMea;    
-  static AIDA::IHistogram1D* hPullThNeuMea;    
-  static AIDA::IHistogram1D* hPullPhJetMea;    
-  static AIDA::IHistogram1D* hPullPhLepMea;    
-  static AIDA::IHistogram1D* hPullPhNeuMea; 
-     
   static AIDA::IHistogram1D* hDistEJetTrue;    
   static AIDA::IHistogram1D* hDistELepTrue;    
   static AIDA::IHistogram1D* hDistENeuTrue;    
@@ -204,7 +188,27 @@ void TopTester::processEvent( LCEvent * evt ) {
   static AIDA::IHistogram1D* hPullThNeuTrue;    
   static AIDA::IHistogram1D* hPullPhJetTrue;    
   static AIDA::IHistogram1D* hPullPhLepTrue;    
-  static AIDA::IHistogram1D* hPullPhNeuTrue;    
+  static AIDA::IHistogram1D* hPullPhNeuTrue; 
+     
+  static AIDA::IHistogram1D* hDistEJetSmear;    
+  static AIDA::IHistogram1D* hDistELepSmear;    
+  static AIDA::IHistogram1D* hDistENeuSmear;    
+  static AIDA::IHistogram1D* hDistThJetSmear;    
+  static AIDA::IHistogram1D* hDistThLepSmear;    
+  static AIDA::IHistogram1D* hDistThNeuSmear;    
+  static AIDA::IHistogram1D* hDistPhJetSmear;    
+  static AIDA::IHistogram1D* hDistPhLepSmear;
+  static AIDA::IHistogram1D* hDistPhNeuSmear;
+      
+  static AIDA::IHistogram1D* hPullEJetSmear;    
+  static AIDA::IHistogram1D* hPullELepSmear;    
+  static AIDA::IHistogram1D* hPullENeuSmear;    
+  static AIDA::IHistogram1D* hPullThJetSmear;    
+  static AIDA::IHistogram1D* hPullThLepSmear;    
+  static AIDA::IHistogram1D* hPullThNeuSmear;    
+  static AIDA::IHistogram1D* hPullPhJetSmear;    
+  static AIDA::IHistogram1D* hPullPhLepSmear;    
+  static AIDA::IHistogram1D* hPullPhNeuSmear;    
                
   if( isFirstEvent() ) { 
     
@@ -345,31 +349,31 @@ void TopTester::processEvent( LCEvent * evt ) {
 
     hDistEJetOK = 
       AIDAProcessor::histogramFactory(this)->
-      createHistogram1D( "hDistEJetOK", "fitted - true jet energy", 200, -50., 50. ) ;    
+      createHistogram1D( "hDistEJetOK", "fitted - start jet energy", 200, -50., 50. ) ;    
     hDistELepOK = 
       AIDAProcessor::histogramFactory(this)->
-      createHistogram1D( "hDistELepOK", "fitted - true lepton 1/pt", 200,  -0.001, 0.001 ) ;    
+      createHistogram1D( "hDistELepOK", "fitted - start lepton 1/pt", 200,  -0.001, 0.001 ) ;    
     hDistENeuOK = 
       AIDAProcessor::histogramFactory(this)->
-      createHistogram1D( "hDistENeuOK", "fitted - true neutrino energy", 200,  -50., 50. ) ;    
+      createHistogram1D( "hDistENeuOK", "fitted - start neutrino energy", 200,  -50., 50. ) ;    
     hDistThJetOK = 
       AIDAProcessor::histogramFactory(this)->
-      createHistogram1D( "hDistThJetOK", "fitted - true jet theta", 200, -1., 1.) ;    
+      createHistogram1D( "hDistThJetOK", "fitted - start jet theta", 200, -1., 1.) ;    
     hDistThLepOK = 
       AIDAProcessor::histogramFactory(this)->
-      createHistogram1D( "hDistThLepOK", "fitted - true lepton theta", 200,  -0.01, 0.01) ;    
+      createHistogram1D( "hDistThLepOK", "fitted - start lepton theta", 200,  -0.01, 0.01) ;    
     hDistThNeuOK = 
       AIDAProcessor::histogramFactory(this)->
-      createHistogram1D( "hDistThNeuOK", "fitted - true neutrino theta", 200,  -1., 1.) ;    
+      createHistogram1D( "hDistThNeuOK", "fitted - start neutrino theta", 200,  -1., 1.) ;    
     hDistPhJetOK = 
       AIDAProcessor::histogramFactory(this)->
-      createHistogram1D( "hDistPhJetOK", "fitted - true jet phi", 200, -1., 1. ) ;    
+      createHistogram1D( "hDistPhJetOK", "fitted - start jet phi", 200, -1., 1. ) ;    
     hDistPhLepOK = 
       AIDAProcessor::histogramFactory(this)->
-      createHistogram1D( "hDistPhLepOK", "fitted - true lepton phi", 200, -0.01, 0.01 ) ;    
+      createHistogram1D( "hDistPhLepOK", "fitted - start lepton phi", 200, -0.01, 0.01 ) ;    
     hDistPhNeuOK = 
       AIDAProcessor::histogramFactory(this)->
-      createHistogram1D( "hDistPhNeuOK", "fitted - true neutrino phi", 200, -1., 1. ) ;    
+      createHistogram1D( "hDistPhNeuOK", "fitted - start neutrino phi", 200, -1., 1. ) ;    
 
     hPullEJetOK = 
       AIDAProcessor::histogramFactory(this)->
@@ -399,117 +403,117 @@ void TopTester::processEvent( LCEvent * evt ) {
       AIDAProcessor::histogramFactory(this)->
       createHistogram1D( "hPullPhNeuOK", "pull of neutrino phi", 100, -5., 5. ) ;    
 
-    hDistEJetMea = 
-      AIDAProcessor::histogramFactory(this)->
-      createHistogram1D( "hDistEJetMea", "measured - true jet energy", 200, -50., 50. ) ;    
-    hDistELepMea = 
-      AIDAProcessor::histogramFactory(this)->
-      createHistogram1D( "hDistELepMea", "measured - true lepton 1/pt", 200, -0.001, 0.001 ) ;    
-    hDistENeuMea = 
-      AIDAProcessor::histogramFactory(this)->
-      createHistogram1D( "hDistENeuMea", "measured - true neutrino 1/pt", 200, -50., 50. ) ;    
-    hDistThJetMea = 
-      AIDAProcessor::histogramFactory(this)->
-      createHistogram1D( "hDistThJetMea", "measured - true jet theta", 200, -1., 1. ) ;    
-    hDistThLepMea = 
-      AIDAProcessor::histogramFactory(this)->
-      createHistogram1D( "hDistThLepMea", "measured - true lepton theta", 200, -0.01, 0.01 ) ;    
-    hDistThNeuMea = 
-      AIDAProcessor::histogramFactory(this)->
-      createHistogram1D( "hDistThNeuMea", "measured - true neutrino theta", 200, -1., 1. ) ;    
-    hDistPhJetMea = 
-      AIDAProcessor::histogramFactory(this)->
-      createHistogram1D( "hDistPhJetMea", "measured - true jet phi", 200, -1., 1. ) ;    
-    hDistPhLepMea = 
-      AIDAProcessor::histogramFactory(this)->
-      createHistogram1D( "hDistPhLepMea", "measured - true lepton phi", 200, -0.01, 0.01 ) ;    
-    hDistPhNeuMea = 
-      AIDAProcessor::histogramFactory(this)->
-      createHistogram1D( "hDistPhNeuMea", "measured - true neutrino phi", 200, -1., 1. ) ;    
-
-    hPullEJetMea = 
-      AIDAProcessor::histogramFactory(this)->
-      createHistogram1D( "hPullEJetMea", "pull of jet energy, #sigma_mea", 100, -5., 5. ) ;    
-    hPullELepMea = 
-      AIDAProcessor::histogramFactory(this)->
-      createHistogram1D( "hPullELepMea", "pull of lepton energy, #sigma_mea", 100, -5., 5. ) ;    
-    hPullENeuMea = 
-      AIDAProcessor::histogramFactory(this)->
-      createHistogram1D( "hPullENeuMea", "pull of neutrino energy, #sigma_mea", 100, -5., 5. ) ;    
-    hPullThJetMea = 
-      AIDAProcessor::histogramFactory(this)->
-      createHistogram1D( "hPullThJetMea", "pull of jet theta, #sigma_mea", 100, -5., 5. ) ;    
-    hPullThLepMea = 
-      AIDAProcessor::histogramFactory(this)->
-      createHistogram1D( "hPullThLepMea", "pull of lepton theta, #sigma_mea", 100, -5., 5. ) ;    
-    hPullThNeuMea = 
-      AIDAProcessor::histogramFactory(this)->
-      createHistogram1D( "hPullThNeuMea", "pull of neutrino theta, #sigma_mea", 100, -5., 5. ) ;    
-    hPullPhJetMea = 
-      AIDAProcessor::histogramFactory(this)->
-      createHistogram1D( "hPullPhJetMea", "pull of jet phi, #sigma_mea", 100, -5., 5. ) ;    
-    hPullPhLepMea = 
-      AIDAProcessor::histogramFactory(this)->
-      createHistogram1D( "hPullPhLepMea", "pull of lepton phi, #sigma_mea", 100, -5., 5. ) ;    
-    hPullPhNeuMea = 
-      AIDAProcessor::histogramFactory(this)->
-      createHistogram1D( "hPullPhNeuMea", "pull of neutrino phi, #sigma_mea", 100, -5., 5. ) ;    
-
     hDistEJetTrue = 
       AIDAProcessor::histogramFactory(this)->
-      createHistogram1D( "hDistEJetTrue", "true jet energy", 250, 0., 500. ) ;    
+      createHistogram1D( "hDistEJetTrue", "fitted - true jet energy", 200, -50., 50. ) ;    
     hDistELepTrue = 
       AIDAProcessor::histogramFactory(this)->
-      createHistogram1D( "hDistELepTrue", "true lepton 1/pt", 200, 0.001, 1. ) ;    
+      createHistogram1D( "hDistELepTrue", "fitted - true lepton 1/pt", 200, -0.001, 0.001 ) ;    
     hDistENeuTrue = 
       AIDAProcessor::histogramFactory(this)->
-      createHistogram1D( "hDistENeuTrue", "true neutrino energy", 250, 0., 500. ) ;    
+      createHistogram1D( "hDistENeuTrue", "fitted - true neutrino energy", 200, -50., 50. ) ;    
     hDistThJetTrue = 
       AIDAProcessor::histogramFactory(this)->
-      createHistogram1D( "hDistThJetTrue", "true jet theta", 100, 0., 3.2 ) ;    
+      createHistogram1D( "hDistThJetTrue", "fitted - true jet theta", 200, -1., 1. ) ;    
     hDistThLepTrue = 
       AIDAProcessor::histogramFactory(this)->
-      createHistogram1D( "hDistThLepTrue", "true lepton theta", 100, 0., 3.2 ) ;    
+      createHistogram1D( "hDistThLepTrue", "fitted - true lepton theta", 200, -0.01, 0.01 ) ;    
     hDistThNeuTrue = 
       AIDAProcessor::histogramFactory(this)->
-      createHistogram1D( "hDistThNeuTrue", "true neutrino theta", 100, 0., 3.2 ) ;    
+      createHistogram1D( "hDistThNeuTrue", "fitted - true neutrino theta", 200, -1., 1. ) ;    
     hDistPhJetTrue = 
       AIDAProcessor::histogramFactory(this)->
-      createHistogram1D( "hDistPhJetTrue", "true jet phi", 100, -3.2, 3.2 ) ;    
+      createHistogram1D( "hDistPhJetTrue", "fitted - true jet phi", 200, -1., 1. ) ;    
     hDistPhLepTrue = 
       AIDAProcessor::histogramFactory(this)->
-      createHistogram1D( "hDistPhLepTrue", "true lepton phi", 100, -3.2, 3.2 ) ;    
+      createHistogram1D( "hDistPhLepTrue", "fitted - true lepton phi", 200, -0.01, 0.01 ) ;    
     hDistPhNeuTrue = 
       AIDAProcessor::histogramFactory(this)->
-      createHistogram1D( "hDistPhNeuTrue", "true neutrino phi", 100, -3.2, 3.2 ) ;    
+      createHistogram1D( "hDistPhNeuTrue", "fitted - true neutrino phi", 200, -1., 1. ) ;    
 
     hPullEJetTrue = 
       AIDAProcessor::histogramFactory(this)->
-      createHistogram1D( "hPullEJetTrue", "pull of jet energy vs true", 100, -5., 5. ) ;    
+      createHistogram1D( "hPullEJetTrue",  "(fit - truth)/#sigma_fit of jet energy", 100, -5., 5. ) ;    
     hPullELepTrue = 
       AIDAProcessor::histogramFactory(this)->
-      createHistogram1D( "hPullELepTrue", "pull of lepton energy vs true", 100, -5., 5. ) ;    
+      createHistogram1D( "hPullELepTrue",  "(fit - truth)/#sigma_fit of lepton 1/pt", 100, -5., 5. ) ;    
     hPullENeuTrue = 
       AIDAProcessor::histogramFactory(this)->
-      createHistogram1D( "hPullENeuTrue", "pull of neutrino energy vs true", 100, -5., 5. ) ;    
+      createHistogram1D( "hPullENeuTrue",  "(fit - truth)/#sigma_fit of neutrino energy", 100, -5., 5. ) ;    
     hPullThJetTrue = 
       AIDAProcessor::histogramFactory(this)->
-      createHistogram1D( "hPullThJetTrue", "pull of jet theta vs true", 100, -5., 5. ) ;    
+      createHistogram1D( "hPullThJetTrue", "(fit - truth)/#sigma_fit of jet theta", 100, -5., 5. ) ;    
     hPullThLepTrue = 
       AIDAProcessor::histogramFactory(this)->
-      createHistogram1D( "hPullThLepTrue", "pull of lepton theta vs true", 100, -5., 5. ) ;    
+      createHistogram1D( "hPullThLepTrue", "(fit - truth)/#sigma_fit of lepton theta", 100, -5., 5. ) ;    
     hPullThNeuTrue = 
       AIDAProcessor::histogramFactory(this)->
-      createHistogram1D( "hPullThNeuTrue", "pull of neutrino theta vs true", 100, -5., 5. ) ;    
+      createHistogram1D( "hPullThNeuTrue", "(fit - truth)/#sigma_fit of neutrino theta", 100, -5., 5. ) ;    
     hPullPhJetTrue = 
       AIDAProcessor::histogramFactory(this)->
-      createHistogram1D( "hPullPhJetTrue", "pull of jet phi vs true", 100, -5., 5. ) ;    
+      createHistogram1D( "hPullPhJetTrue", "(fit - truth)/#sigma_fit of jet phi", 100, -5., 5. ) ;    
     hPullPhLepTrue = 
       AIDAProcessor::histogramFactory(this)->
-      createHistogram1D( "hPullPhLepTrue", "pull of lepton phi vs true", 100, -5., 5. ) ;    
+      createHistogram1D( "hPullPhLepTrue", "(fit - truth)/#sigma_fit of lepton phi", 100, -5., 5. ) ;    
     hPullPhNeuTrue = 
       AIDAProcessor::histogramFactory(this)->
-      createHistogram1D( "hPullPhNeuTrue", "pull of neutrino phi vs true", 100, -5., 5. ) ;    
+      createHistogram1D( "hPullPhNeuTrue", "(fit - truth)/#sigma_fit of neutrino phi", 100, -5., 5. ) ;    
+
+    hDistEJetSmear = 
+      AIDAProcessor::histogramFactory(this)->
+      createHistogram1D( "hDistEJetSmear", "start - true jet energy", 200, -50., 50. ) ;    
+    hDistELepSmear = 
+      AIDAProcessor::histogramFactory(this)->
+      createHistogram1D( "hDistELepSmear", "start - true lepton 1/pt", 200, -0.001, 0.001 ) ;    
+    hDistENeuSmear = 
+      AIDAProcessor::histogramFactory(this)->
+      createHistogram1D( "hDistENeuSmear", "start - true neutrino energy", 200, -50., 50. ) ;    
+    hDistThJetSmear = 
+      AIDAProcessor::histogramFactory(this)->
+      createHistogram1D( "hDistThJetSmear", "start - true jet theta", 200, -1., 1. ) ;    
+    hDistThLepSmear = 
+      AIDAProcessor::histogramFactory(this)->
+      createHistogram1D( "hDistThLepSmear", "start - true lepton theta", 200, -0.01, 0.01 ) ;    
+    hDistThNeuSmear = 
+      AIDAProcessor::histogramFactory(this)->
+      createHistogram1D( "hDistThNeuSmear", "start - true neutrino theta", 200, -1., 1. ) ;    
+    hDistPhJetSmear = 
+      AIDAProcessor::histogramFactory(this)->
+      createHistogram1D( "hDistPhJetSmear", "start - true jet phi", 200, -1., 1. ) ;    
+    hDistPhLepSmear = 
+      AIDAProcessor::histogramFactory(this)->
+      createHistogram1D( "hDistPhLepSmear", "start - true lepton phi", 200, -0.01, 0.01 ) ;    
+    hDistPhNeuSmear = 
+      AIDAProcessor::histogramFactory(this)->
+      createHistogram1D( "hDistPhNeuSmear", "start - true neutrino phi", 100, -3.2, 3.2 ) ;    
+
+    hPullEJetSmear = 
+      AIDAProcessor::histogramFactory(this)->
+      createHistogram1D( "hPullEJetSmear", "(start - true)/#sigma_mea of jet energy", 100, -5., 5. ) ;    
+    hPullELepSmear = 
+      AIDAProcessor::histogramFactory(this)->
+      createHistogram1D( "hPullELepSmear", "(start - true)/#sigma_mea of lepton energy", 100, -5., 5. ) ;    
+    hPullENeuSmear = 
+      AIDAProcessor::histogramFactory(this)->
+      createHistogram1D( "hPullENeuSmear", "(start - true)/#sigma_mea of neutrino energy", 100, -5., 5. ) ;    
+    hPullThJetSmear = 
+      AIDAProcessor::histogramFactory(this)->
+      createHistogram1D( "hPullThJetSmear", "(start - true)/#sigma_mea of jet theta", 100, -5., 5. ) ;    
+    hPullThLepSmear = 
+      AIDAProcessor::histogramFactory(this)->
+      createHistogram1D( "hPullThLepSmear", "(start - true)/#sigma_mea of lepton theta", 100, -5., 5. ) ;    
+    hPullThNeuSmear = 
+      AIDAProcessor::histogramFactory(this)->
+      createHistogram1D( "hPullThNeuSmear", "(start - true)/#sigma_mea of neutrino theta", 100, -5., 5. ) ;    
+    hPullPhJetSmear = 
+      AIDAProcessor::histogramFactory(this)->
+      createHistogram1D( "hPullPhJetSmear", "(start - true)/#sigma_mea of jet phi", 100, -5., 5. ) ;    
+    hPullPhLepSmear = 
+      AIDAProcessor::histogramFactory(this)->
+      createHistogram1D( "hPullPhLepSmear", "(start - true)/#sigma_mea of lepton phi", 100, -5., 5. ) ;    
+    hPullPhNeuSmear = 
+      AIDAProcessor::histogramFactory(this)->
+      createHistogram1D( "hPullPhNeuSmear", "(start - true)/#sigma_mea of neutrino phi", 100, -5., 5. ) ;    
   }
 
 #endif   
@@ -523,19 +527,19 @@ void TopTester::processEvent( LCEvent * evt ) {
      double startmasstop1 = 0., startmasstop2 = 0.;
      
      int debug = 0;
-     if (ievt == _ievttrace || _traceall) debug = 4;
+     if (ievt == _ievttrace || _traceall) debug = 10;
      topevent->setDebug (debug);
           
      topevent->genEvent();
        
      startmassW1 = topevent->getW1Mass();
      startmassW2 = topevent->getW2Mass();
-     message<DEBUG>( log()  << "start mass of W 1: " << startmassW1 ) ;
-     message<DEBUG>( log()  << "start mass of W 2: " << startmassW2 ) ;
+     message<MESSAGE>( log()  << "start mass of W 1: " << startmassW1 ) ;
+     message<MESSAGE>( log()  << "start mass of W 2: " << startmassW2 ) ;
      startmasstop1 = topevent->getTop1Mass();
      startmasstop2 = topevent->getTop2Mass();
-     message<DEBUG>( log()  << "start mass of top 1: " << startmasstop1 ) ;
-     message<DEBUG>( log()  << "start mass of top 2: " << startmasstop2 ) ;
+     message<MESSAGE>( log()  << "start mass of top 1: " << startmasstop1 ) ;
+     message<MESSAGE>( log()  << "start mass of top 2: " << startmasstop2 ) ;
                      
 #ifdef MARLIN_USE_AIDA
      hRecTop1MassNoFitAll->fill( startmasstop1 ) ;
@@ -556,8 +560,9 @@ void TopTester::processEvent( LCEvent * evt ) {
        (dynamic_cast<NewtonFitterGSL*>(pfitter))->setDebug (debug);
      }  
      else {
-       // OPALFitter has no method setDebug !
+       // OPALFitter now also has method setDebug !
        pfitter = new OPALFitterGSL();
+       (dynamic_cast<OPALFitterGSL*>(pfitter))->setDebug (debug);
      }
      BaseFitter &fitter = *pfitter;
   
@@ -566,13 +571,13 @@ void TopTester::processEvent( LCEvent * evt ) {
            
      // fill start values of constraints
 #ifdef MARLIN_USE_AIDA
-     hPxConstStart->fill (topevent->getPxConstraint().getValue()); 
-     hPyConstStart->fill (topevent->getPyConstraint().getValue()); 
-     hPzConstStart->fill (topevent->getPzConstraint().getValue()); 
-     hEConstStart->fill (topevent->getEConstraint().getValue()); 
-     hMW1ConstStart->fill (topevent->getW1Constraint().getValue()); 
-     hMW2ConstStart->fill (topevent->getW2Constraint().getValue()); 
-     hMConstStart->fill (topevent->getTopConstraint().getValue()); 
+     hPxConstStart->fill (topevent->getPxConstraint()->getValue()); 
+     hPyConstStart->fill (topevent->getPyConstraint()->getValue()); 
+     hPzConstStart->fill (topevent->getPzConstraint()->getValue()); 
+     hEConstStart->fill (topevent->getEConstraint()->getValue()); 
+     hMW1ConstStart->fill (topevent->getW1Constraint()->getValue()); 
+     hMW2ConstStart->fill (topevent->getW2Constraint()->getValue()); 
+     hMConstStart->fill (topevent->getTopConstraint()->getValue()); 
 #endif
 
      int ierr = topevent->fitEvent(fitter);
@@ -582,14 +587,14 @@ void TopTester::processEvent( LCEvent * evt ) {
      double chi2 = fitter.getChi2();
      int nit = fitter.getIterations();
 
-     message<DEBUG>( log() << "fit probability = " << prob ) ;  
-     message<DEBUG>( log() << "fit chi2 = " << chi2  ) ; 
-     message<DEBUG>( log() << "error code: " << ierr ) ;
+     message<MESSAGE>( log() << "fit probability = " << prob ) ;  
+     message<MESSAGE>( log() << "fit chi2 = " << chi2  ) ; 
+     message<MESSAGE>( log() << "error code: " << ierr ) ;
                                   
-     message<DEBUG>( log()  << "final mass of W 1: " << topevent->getW1Mass() ) ;
-     message<DEBUG>( log()  << "final mass of W 2: " << topevent->getW2Mass() ) ;
-     message<DEBUG>( log()  << "final mass of top 1: " << topevent->getTop1Mass() ) ;
-     message<DEBUG>( log()  << "final mass of top 2: " << topevent->getTop2Mass() ) ;
+     message<MESSAGE>( log()  << "final mass of W 1: " << topevent->getW1Mass() ) ;
+     message<MESSAGE>( log()  << "final mass of W 2: " << topevent->getW2Mass() ) ;
+     message<MESSAGE>( log()  << "final mass of top 1: " << topevent->getTop1Mass() ) ;
+     message<MESSAGE>( log()  << "final mass of top 2: " << topevent->getTop2Mass() ) ;
        
      bool usesigma_evt = true;
                   
@@ -612,76 +617,100 @@ void TopTester::processEvent( LCEvent * evt ) {
        hRecWMass->fill( 0.5*(topevent->getW1Mass()+topevent->getW2Mass()) ) ;
        
        // fill final values of constraints
-       hPxConstStop->fill (topevent->getPxConstraint().getValue()); 
-       hPyConstStop->fill (topevent->getPyConstraint().getValue()); 
-       hPzConstStop->fill (topevent->getPzConstraint().getValue()); 
-       hEConstStop->fill (topevent->getEConstraint().getValue()); 
-       hMW1ConstStop->fill (topevent->getW1Constraint().getValue()); 
-       hMW2ConstStop->fill (topevent->getW2Constraint().getValue()); 
-       hMConstStop->fill (topevent->getTopConstraint().getValue()); 
+       hPxConstStop->fill (topevent->getPxConstraint()->getValue()); 
+       hPyConstStop->fill (topevent->getPyConstraint()->getValue()); 
+       hPzConstStop->fill (topevent->getPzConstraint()->getValue()); 
+       hEConstStop->fill (topevent->getEConstraint()->getValue()); 
+       hMW1ConstStop->fill (topevent->getW1Constraint()->getValue()); 
+       hMW2ConstStop->fill (topevent->getW2Constraint()->getValue()); 
+       hMConstStop->fill (topevent->getTopConstraint()->getValue()); 
        
-       message<DEBUG>( log() << "looping over FOs " ) ;
+       message<MESSAGE>( log() << "looping over FOs " ) ;
        for (int ifo = 0; ifo < 6; ifo++){
-         double errfit, errmea, start, sigma; 
-         double pull[3], pullmea[3], pulltrue[3];
+         double errfit, errmea, sigma; 
+         double truth, start, fitted;
+         double pull[3], pulltrue[3], pullsmear[3];
+         double dist[3], disttrue[3], distsmear[3];
          bool usesigma[3];
          for (int ipar = 0; ipar < 3; ipar++) {
            errfit = topevent->getFittedFitObject(ifo)->getError(ipar);  // should make difference for NewtonFitter
            errmea = topevent->getStartFitObject(ifo)->getError(ipar);  // SmearedFO are not fitted: original errors
-           start = topevent->getStartFitObject(ifo)->getParam(ipar);  // SmearedFO are not fitted: original values
-           sigma = errmea*errmea-errfit*errfit;
-           message<DEBUG>( log() << " sigma =  " << sigma << " for ifo " << ifo 
-                                 << " in evt " << ievt << ", errmea =  " << errmea << ", errfit = " << errfit ) ;
+           truth = topevent->getTrueFitObject(ifo)->getParam(ipar);  // TrueFO are not fitted: truth values           
+           start = topevent->getStartFitObject(ifo)->getParam(ipar);  // SmearedFO are not fitted: original values           
+           fitted = topevent->getFittedFitObject(ifo)->getParam(ipar);  // fitted values           
+           if ( topevent->getFittedFitObject(ifo)->isParamMeasured(ipar) ) {
+             sigma = errmea*errmea-errfit*errfit;
+           }
+           else {
+             sigma = errfit*errfit;     
+           }  
+           
+           message<MESSAGE>( log() << " sigma =  " << sigma << " for ifo " << ifo 
+                                   << " in evt " << ievt << ", errmea =  " << errmea << ", errfit = " << errfit ) ;
            if (sigma > 0) {
              sigma = sqrt(sigma);
              usesigma[ipar] = true;
            }
            else {
              message<WARNING>( log() << " SIGMA <= 0, taking only fitted errors for pull for ifo = " << ifo 
-                                     << " in evt " << ievt << ", errmea =  " << errmea << ", errfit = " << errfit ) ;
+                                     << " in evt " << ievt << ", errmea =  " << errmea << ", errfit = " << errfit
+                                     << " for ierr =  " << ierr ) ;
+             message<WARNING>( log() << "fit probability = " << prob ) ;  
+             message<WARNING>( log() << "fit chi2 = " << chi2  ) ; 
+             message<WARNING>( log() << "error code: " << ierr ) ;
+                                          
+             message<WARNING>( log()  << "final mass of W 1: " << topevent->getW1Mass() ) ;
+             message<WARNING>( log()  << "final mass of W 2: " << topevent->getW2Mass() ) ;
+             message<WARNING>( log()  << "final mass of top 1: " << topevent->getTop1Mass() ) ;
+             message<WARNING>( log()  << "final mass of top 2: " << topevent->getTop2Mass() ) ;
              sigma = errfit*errfit;
              usesigma[ipar] = false;
              usesigma_evt = false;
-           }  
-           pull[ipar] = (start - topevent->getFittedFitObject(ifo)->getParam(ipar))/sigma;
-           pullmea[ipar] = (start - topevent->getFittedFitObject(ifo)->getParam(ipar))/errmea;
-           pulltrue[ipar] = (start - topevent->getTrueFitObject(ifo)->getParam(ipar))/errmea;
-           message<DEBUG>( log() << " pull =  " << pull[ipar] << " for ifo " << ifo 
-                                 << " in evt " << ievt << ", pullmea =  " << pullmea[ipar] 
-                                 << ", delta = " << start - topevent->getFittedFitObject(ifo)->getParam(ipar) ) ;
+           } 
+           
+           dist[ipar] = (fitted - start);
+           disttrue[ipar] = (fitted - truth);
+           distsmear[ipar] = (start - truth);
+           pull[ipar] = dist[ipar]/sigma;
+           pulltrue[ipar] = disttrue[ipar]/errfit;
+           pullsmear[ipar] = (start - truth)/errmea;
+           message<MESSAGE>( log() << " pull =  " << pull[ipar] << " for ifo " << ifo                                
+                                   << " in evt " << ievt << ", pulltrue =  " << pulltrue[ipar]                         
+                                   << ", delta = " << start - topevent->getFittedFitObject(ifo)->getParam(ipar) ) ;  
+                                   
          }  
          if ( !_semileptonic || ifo < 4 ) {
-           hDistEJetOK->fill  (topevent->getFittedFitObject(ifo)->getParam(0) - topevent->getTrueFitObject(ifo)->getParam(0)); hPullEJetOK->fill (pull[0]); 
-           hDistThJetOK->fill (topevent->getFittedFitObject(ifo)->getParam(1) - topevent->getTrueFitObject(ifo)->getParam(1)); hPullThJetOK->fill(pull[1]); 
-           hDistPhJetOK->fill (topevent->getFittedFitObject(ifo)->getParam(2) - topevent->getTrueFitObject(ifo)->getParam(2)); hPullPhJetOK->fill(pull[2]); 
-           hDistEJetMea->fill  (topevent->getStartFitObject(ifo)->getParam(0) - topevent->getTrueFitObject(ifo)->getParam(0));  hPullEJetMea->fill (pullmea[0]); 
-           hDistThJetMea->fill (topevent->getStartFitObject(ifo)->getParam(1) - topevent->getTrueFitObject(ifo)->getParam(1)); hPullThJetMea->fill (pullmea[1]); 
-           hDistPhJetMea->fill (topevent->getStartFitObject(ifo)->getParam(2) - topevent->getTrueFitObject(ifo)->getParam(2)); hPullPhJetMea->fill (pullmea[2]); 
-           hDistEJetTrue->fill (topevent->getTrueFitObject(ifo)->getParam(0));  hPullEJetTrue->fill (pulltrue[0]);
-           hDistThJetTrue->fill(topevent->getTrueFitObject(ifo)->getParam(1)); hPullThJetTrue->fill (pulltrue[1]);
-           hDistPhJetTrue->fill(topevent->getTrueFitObject(ifo)->getParam(2)); hPullPhJetTrue->fill (pulltrue[2]);
+           hDistEJetOK->fill    (dist[0]);      hPullEJetOK->fill (pull[0]); 
+           hDistThJetOK->fill   (dist[1]);      hPullThJetOK->fill(pull[1]); 
+           hDistPhJetOK->fill   (dist[2]);      hPullPhJetOK->fill(pull[2]); 
+           hDistEJetTrue->fill  (disttrue[0]);  hPullEJetTrue->fill (pulltrue[0]); 
+           hDistThJetTrue->fill (disttrue[1]);  hPullThJetTrue->fill (pulltrue[1]); 
+           hDistPhJetTrue->fill (disttrue[2]);  hPullPhJetTrue->fill (pulltrue[2]); 
+           hDistEJetSmear->fill (distsmear[0]); hPullEJetSmear->fill (pullsmear[0]);
+           hDistThJetSmear->fill(distsmear[1]); hPullThJetSmear->fill (pullsmear[1]);
+           hDistPhJetSmear->fill(distsmear[2]); hPullPhJetSmear->fill (pullsmear[2]);
          }
          else if ( _semileptonic && ifo ==  4 ) {
-           hDistELepOK->fill  (topevent->getFittedFitObject(ifo)->getParam(0) - topevent->getTrueFitObject(ifo)->getParam(0)); hPullELepOK->fill (pull[0]);  
-           hDistThLepOK->fill (topevent->getFittedFitObject(ifo)->getParam(1) - topevent->getTrueFitObject(ifo)->getParam(1)); hPullThLepOK->fill(pull[1]);  
-           hDistPhLepOK->fill (topevent->getFittedFitObject(ifo)->getParam(2) - topevent->getTrueFitObject(ifo)->getParam(2)); hPullPhLepOK->fill(pull[2]);  
-           hDistELepMea->fill  (topevent->getStartFitObject(ifo)->getParam(0) - topevent->getTrueFitObject(ifo)->getParam(0)); hPullELepMea->fill (pullmea[0]); 
-           hDistThLepMea->fill (topevent->getStartFitObject(ifo)->getParam(1) - topevent->getTrueFitObject(ifo)->getParam(1)); hPullThLepMea->fill(pullmea[1]); 
-           hDistPhLepMea->fill (topevent->getStartFitObject(ifo)->getParam(2) - topevent->getTrueFitObject(ifo)->getParam(2)); hPullPhLepMea->fill(pullmea[2]); 
-           hDistELepTrue->fill (topevent->getTrueFitObject(ifo)->getParam(0)); hPullELepTrue->fill (pulltrue[0]);
-           hDistThLepTrue->fill(topevent->getTrueFitObject(ifo)->getParam(1)); hPullThLepTrue->fill(pulltrue[1]);
-           hDistPhLepTrue->fill(topevent->getTrueFitObject(ifo)->getParam(2)); hPullPhLepTrue->fill(pulltrue[2]);
+           hDistELepOK->fill    (dist[0]);      hPullELepOK->fill (pull[0]);  
+           hDistThLepOK->fill   (dist[1]);      hPullThLepOK->fill(pull[1]);  
+           hDistPhLepOK->fill   (dist[2]);      hPullPhLepOK->fill(pull[2]);  
+           hDistELepTrue->fill  (disttrue[0]);  hPullELepTrue->fill (pulltrue[0]); 
+           hDistThLepTrue->fill (disttrue[1]);  hPullThLepTrue->fill(pulltrue[1]); 
+           hDistPhLepTrue->fill (disttrue[2]);  hPullPhLepTrue->fill(pulltrue[2]); 
+           hDistELepSmear->fill (distsmear[0]); hPullELepSmear->fill (pullsmear[0]);
+           hDistThLepSmear->fill(distsmear[1]); hPullThLepSmear->fill(pullsmear[1]);
+           hDistPhLepSmear->fill(distsmear[2]); hPullPhLepSmear->fill(pullsmear[2]);
          }
          else if ( _semileptonic && ifo ==  5 ) {
-           hDistENeuOK->fill  (topevent->getFittedFitObject(ifo)->getParam(0) - topevent->getTrueFitObject(ifo)->getParam(0)); hPullENeuOK->fill (pull[0]);  
-           hDistThNeuOK->fill (topevent->getFittedFitObject(ifo)->getParam(1) - topevent->getTrueFitObject(ifo)->getParam(1)); hPullThNeuOK->fill(pull[1]);  
-           hDistPhNeuOK->fill (topevent->getFittedFitObject(ifo)->getParam(2) - topevent->getTrueFitObject(ifo)->getParam(2)); hPullPhNeuOK->fill(pull[2]);  
-           hDistENeuMea->fill  (topevent->getStartFitObject(ifo)->getParam(0) - topevent->getTrueFitObject(ifo)->getParam(0)); hPullENeuMea->fill (pullmea[0]); 
-           hDistThNeuMea->fill (topevent->getStartFitObject(ifo)->getParam(1) - topevent->getTrueFitObject(ifo)->getParam(1)); hPullThNeuMea->fill(pullmea[1]); 
-           hDistPhNeuMea->fill (topevent->getStartFitObject(ifo)->getParam(2) - topevent->getTrueFitObject(ifo)->getParam(2)); hPullPhNeuMea->fill(pullmea[2]); 
-           hDistENeuTrue->fill (topevent->getTrueFitObject(ifo)->getParam(0)); hPullENeuTrue->fill (pulltrue[0]);
-           hDistThNeuTrue->fill(topevent->getTrueFitObject(ifo)->getParam(1)); hPullThNeuTrue->fill(pulltrue[1]);
-           hDistPhNeuTrue->fill(topevent->getTrueFitObject(ifo)->getParam(2)); hPullPhNeuTrue->fill(pulltrue[2]);
+           hDistENeuOK->fill    (dist[0]);      hPullENeuOK->fill (pull[0]); 
+           hDistThNeuOK->fill   (dist[1]);      hPullThNeuOK->fill(pull[1]); 
+           hDistPhNeuOK->fill   (dist[2]);      hPullPhNeuOK->fill(pull[2]); 
+           hDistENeuTrue->fill  (disttrue[0]);  hPullENeuTrue->fill (pulltrue[0]); 
+           hDistThNeuTrue->fill (disttrue[1]);  hPullThNeuTrue->fill(pulltrue[1]); 
+           hDistPhNeuTrue->fill (disttrue[2]);  hPullPhNeuTrue->fill(pulltrue[2]); 
+           hDistENeuSmear->fill (distsmear[0]); hPullENeuSmear->fill (pullsmear[0]);
+           hDistThNeuSmear->fill(distsmear[1]); hPullThNeuSmear->fill(pullsmear[1]);
+           hDistPhNeuSmear->fill(distsmear[2]); hPullPhNeuSmear->fill(pullsmear[2]);
          }
        }
      }

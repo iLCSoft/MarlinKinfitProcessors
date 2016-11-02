@@ -63,7 +63,7 @@ WW5CFit::WW5CFit() : Processor("WW5CFit") {
 			   "JetCollectionName" , 
 			   "Name of the Jet collection"  ,
 			   _jetcolName ,
-			   std::string("Durham2Jets") ) ;
+			   std::string("Durham4Jets") ) ;
                            
   registerProcessorParameter( "ECM" ,
                               "Center-of-Mass Energy in GeV",
