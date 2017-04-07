@@ -1,5 +1,6 @@
 # MarlinKinfitProcessors
 [![Build Status](https://travis-ci.org/iLCSoft/MarlinKinfitProcessors.svg?branch=master)](https://travis-ci.org/iLCSoft/MarlinKinfitProcessors)
+[![Coverity Scan Build Status](https://scan.coverity.com/projects/12362/badge.svg)](https://scan.coverity.com/projects/ilcsoft-marlinkinfitprocessors)
 
 Marlin Processors to use MarlinKinfit
 
