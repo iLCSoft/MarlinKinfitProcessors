@@ -40,18 +40,13 @@ PhotonResponseAdjuster::PhotonResponseAdjuster() : Processor("PhotonResponseAdju
 				(double) 0.001);
 
   registerProcessorParameter( "AllowedEnergyDeviation",
-			      " allowed energy deviation of MC and REC photon in GeV",
+			      " allowed energy deviation of MC and REC photon in standard deviations",
 			      _allowedEnergyDeviation,
 			      (double)999.0);
  
-  registerProcessorParameter( "AllowedThetaDeviation",
-			      " allowed theta deviation of MC and REC photon in radians",
-			      _allowedThetaDeviation,
-			      (double)3.14);
- 
-  registerProcessorParameter( "AllowedPhiDeviation",
-			      " allowed phi deviation of MC and REC photon in radians",
-                              _allowedPhiDeviation,
+  registerProcessorParameter( "AllowedAngularDeviation",
+			      " allowed theta deviation of MC and REC photon in standard deviations",
+			      _allowedAngularDeviation,
 			      (double)3.14);
 
   std::string inputParticleCollectionName = "PandoraPFOs";
@@ -68,7 +63,7 @@ PhotonResponseAdjuster::PhotonResponseAdjuster() : Processor("PhotonResponseAdju
                            std::string("MCParticle") ) ;
 
  // std::string outputParticleCollectionName = "FastReconstructedParticles";
-  std::string outputParticleCollectionName = "CalibratedPhotons";
+  std::string outputParticleCollectionName = "AdjustedPhotons";
   registerOutputCollection( LCIO::RECONSTRUCTEDPARTICLE,
                              "OutputParticleCollectionName" ,
 			     "Output Particle Collection Name "  ,
@@ -84,13 +79,14 @@ void PhotonResponseAdjuster::init() {
   // usually a good idea to
   printParameters() ;
   rng = new TRandom3();
-  nEvt = 0;
+  _nEvt = 0;
   nrejected =0;
 
 }
 
 void PhotonResponseAdjuster::processRunHeader( LCRunHeader* run) {
-
+  streamlog_out(MESSAGE) << " processRunHeader "  << run->getRunNumber() << std::endl ;
+  _nRun++ ;
 }
 
 bool PhotonResponseAdjuster::FindPFOs( LCEvent* evt ) {
@@ -101,11 +97,11 @@ std::cout<<" here? "<<std::endl;
   _pfovec.clear();
   typedef const std::vector<std::string> StringVec ;
   StringVec* strVec = evt->getCollectionNames() ;
-  for(StringVec::const_iterator name=strVec->begin(); name!=strVec->end(); name++){
- // std::cout<<"collection item: "<< *name << " with " << _inputParticleCollectionName<<std::endl;    
-    if(*name==_inputParticleCollectionName){
+  for(StringVec::const_iterator itname=strVec->begin(); itname!=strVec->end(); itname++){
+ // std::cout<<"collection item: "<< *itname << " with " << _inputParticleCollectionName<<std::endl;    
+    if(*itname==_inputParticleCollectionName){
 //      std::cout<< "found matching collection name for photon" <<std::endl;
-      LCCollection* col = evt->getCollection(*name);
+      LCCollection* col = evt->getCollection(*itname);
       unsigned int nelem = col->getNumberOfElements();
 //      std::cout<<" number of elements "<<nelem<<std::endl;
       tf = true;
@@ -129,9 +125,9 @@ bool PhotonResponseAdjuster::FindMCParticles( LCEvent* evt ){
 
          typedef const std::vector<std::string> StringVec ;
          StringVec* strVec = evt->getCollectionNames() ;
-         for(StringVec::const_iterator name=strVec->begin(); name!=strVec->end(); name++){
-               if(*name==_mcParticleCollectionName){
-                     LCCollection* col = evt->getCollection(*name);
+         for(StringVec::const_iterator itname=strVec->begin(); itname!=strVec->end(); itname++){
+               if(*itname==_mcParticleCollectionName){
+                     LCCollection* col = evt->getCollection(*itname);
                      unsigned int nelem = col->getNumberOfElements();
                       tf = true;
                       for(unsigned int i=0;i<nelem;i++){
@@ -215,61 +211,44 @@ int PhotonResponseAdjuster::getCorrespondingMCParticleIndex(TLorentzVector rec){
 // 
 // Matching would probably be better if based simply on angular deviation.
 
-        // if(_mcpartvec.size() > 1) return -1 ;
- //       std::cout<<"size "<<_mcpartvec.size()<<std::endl;
         if(_mcpartvec.size() == 0) return -1;
         int closest_match_index=-1;
-        double theta_residual=-1;
-        double phi_residual=-1;
+        double angular_residual=-1;
         double e_residual=0;
         double tempresidual1=-1;
         double tempresidual2=-1;
-        double tempresidual3=-1;
         TLorentzVector mc;
 
-        for(int i=0; i<_mcpartvec.size(); i++){
+        for(unsigned int i=0; i<_mcpartvec.size(); i++){
                 //compare angles
                 if(_mcpartflags.at(i) == true) continue;
 
                 mc.SetPxPyPzE(_mcpartvec[i]->getMomentum()[0],_mcpartvec[i]->getMomentum()[1],_mcpartvec[i]->getMomentum()[2],_mcpartvec[i]->getEnergy());
 
-	       // tempresidual1 = fabs(rec.Theta() - mc.Theta());
-               // tempresidual2 = fabs(rec.Phi() - mc.Phi());//dont forget to change this line also
-               // tempresidual3 = fabs(rec.E() - mc.E());
-
                 tempresidual1 = (rec.Vect()).Angle(mc.Vect())/0.0015;             // Calculate angle in space between RP and MCP
-                tempresidual2 = tempresidual1;
-                tempresidual3 = fabs( (rec.E() - mc.E())/(0.18*sqrt(mc.E())) );   // Calculate number of standard deviations
+                tempresidual2 = fabs( (rec.E() - mc.E())/(0.18*sqrt(mc.E())) );   // Calculate number of standard deviations
 
-        	std::cout<<"residuals "<<tempresidual1<<" "<<tempresidual2<<" "<<tempresidual3<<std::endl;	 
+        	std::cout<<"residuals "<<tempresidual1<<" "<<tempresidual2<<std::endl;	 
                        if((closest_match_index==-1) &&
-				(tempresidual3  <= _allowedEnergyDeviation) &&
-				(tempresidual1 <= _allowedThetaDeviation) &&
-				(tempresidual2 <= _allowedPhiDeviation) ){
-
+				(tempresidual2  <= _allowedEnergyDeviation) &&
+				(tempresidual1 <= _allowedAngularDeviation)) {
                                 closest_match_index = i;
-                                theta_residual = tempresidual1;
-                                phi_residual = tempresidual2; //currently between -pi,pi might need to change for 0,2pi
-                                e_residual = tempresidual3;
+                                angular_residual = tempresidual1;
+                                e_residual = tempresidual2;
                         }
                    
-                        double bestSoFar = theta_residual*theta_residual + e_residual*e_residual;
-                        double currentOne = tempresidual1*tempresidual1 + tempresidual3*tempresidual3;
+                        double bestSoFar = angular_residual*angular_residual + e_residual*e_residual;
+                        double currentOne = tempresidual1*tempresidual1 + tempresidual2*tempresidual2;
 
-//                        if(( (tempresidual1+tempresidual2+tempresidual3) < (theta_residual+phi_residual+e_residual) ) &&
                         if(( currentOne < bestSoFar ) &&
 
-				(tempresidual3 <= _allowedEnergyDeviation) &&
-				(tempresidual1 <= _allowedThetaDeviation) &&
-				(tempresidual2 <= _allowedPhiDeviation) ){
+				(tempresidual2 <= _allowedEnergyDeviation) &&
+				(tempresidual1 <= _allowedAngularDeviation) ){
 
                                 closest_match_index=i;
-                                theta_residual = tempresidual1;
-                                phi_residual = tempresidual2;
-                                e_residual = tempresidual3;
+                                angular_residual = tempresidual1;
+                                e_residual = tempresidual2;
                         }
-                
-
         }
         if(closest_match_index != -1){
                 mc.SetPxPyPzE(_mcpartvec[closest_match_index]->getMomentum()[0],_mcpartvec[closest_match_index]->getMomentum()[1],_mcpartvec[closest_match_index]->getMomentum()[2],_mcpartvec[closest_match_index]->getEnergy());
@@ -287,7 +266,7 @@ int PhotonResponseAdjuster::getCorrespondingMCParticleIndex(TLorentzVector rec){
 		std::cout<<"total # rejected photons "<< nrejected++ <<std::endl;
                 }
         }
-	//particle is matched so flag it
+//particle is matched so flag it
 //	_mcpartflags.at(closest_match_index) = true;	
 //	std::cout<<"returning match index "<<closest_match_index<<std::endl;
         return closest_match_index;
@@ -295,7 +274,7 @@ int PhotonResponseAdjuster::getCorrespondingMCParticleIndex(TLorentzVector rec){
 
 void PhotonResponseAdjuster::processEvent( LCEvent * evt ) {
  std::cout<<"starting to process event"<<std::endl;
- std::cout << "======================================== event " << nEvt << std::endl ;
+ std::cout << "======================================== event " << _nEvt << std::endl ;
   //FindMCParticles(evt);
    FindPFOs(evt);
    if(_smearAngles) FindMCParticles(evt);
@@ -313,7 +292,7 @@ void PhotonResponseAdjuster::processEvent( LCEvent * evt ) {
 	newPDG->setPDG(22);
 	newPDG->setLikelihood(1.0);
 
-	for(int i=0; i<_pfovec.size(); i++){
+	for(unsigned int i=0; i<_pfovec.size(); i++){
 		if(_pfovec.at(i)->getType() == 22){
 			ReconstructedParticleImpl* calRecoPart = new ReconstructedParticleImpl();
 			oldE = _pfovec.at(i)->getEnergy();
@@ -376,7 +355,7 @@ void PhotonResponseAdjuster::processEvent( LCEvent * evt ) {
 		 		TLorentzVector gold,gnew;
 				gold.SetPxPyPzE(oldmom[0],oldmom[1],oldmom[2],oldE);
 				gnew.SetPxPyPzE(newmom[0],newmom[1],newmom[2],newE);
-				std::cout<<"Event No. :"<< nEvt << std::endl;
+				std::cout<<"Event No. :"<< _nEvt << std::endl;
 				std::cout<<"Old Photon (Px,Py,Pz,E): "<< oldmom[0] <<" "<<oldmom[1]<<" "<<oldmom[2]<<" "<<oldE<<std::endl;
 				std::cout<<"Old Photon (E,Theta,Phi): "<< gold.E()<< " "<< gold.Theta() << " " << gold.Phi() << std::endl;
 
@@ -390,12 +369,12 @@ void PhotonResponseAdjuster::processEvent( LCEvent * evt ) {
 		
 	}	
  
-  nEvt++;
+  _nEvt++;
 
   // Add new collection to event
   evt->addCollection( calreccol , _outputParticleCollectionName.c_str() );
 
-//  std::cout << "======================================== event " << nEvt << std::endl ;
+//  std::cout << "======================================== event " << _nEvt << std::endl ;
  
 }
 

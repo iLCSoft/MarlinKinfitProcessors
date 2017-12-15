@@ -1,0 +1,98 @@
+<!--#############################################################-->
+<!--#                                                           #-->
+<!--#     Example steering file for Marlin                      #-->
+<!--#   for finding and fitting pipigamma candidates consistent #-->
+<!--#     with                                                  #-->
+<!--#                                                           #-->
+<!--#           Eta -> pi+ pi- gamma                            #--> 
+<!--#                                                           #-->
+<!--#############################################################-->
+
+<marlin>
+ <execute>
+   <processor name="MyMCParticleFilter" />
+   <processor name="MyTrackResponseAdjuster" />
+   <processor name="MyPhotonResponseAdjuster" />
+   <processor name="MyMassConstraintFitter"/>
+   <!-- <processor name="MyLCIOOutputProcessor"/> -->  
+ </execute>
+
+ <global>
+   <parameter name="LCIOInputFiles"> /nfs/dust/ilc/user/wilson/RECO_1904/Eta_20GeV_REC.slcio </parameter> 
+   <parameter name="SkipNEvents" value="0" />
+   <parameter name="MaxRecordNumber" value="0" /> <!-- 0 is all events -->
+   <parameter name="SupressCheck" value="false" />
+   <parameter name="GearXMLFile" value="gear_ILD_l4_v02_dd4hep.xml" />
+   <parameter name="Verbosity" options="DEBUG0-4,MESSAGE0-4,WARNING0-4,ERROR0-4,SILENT"> DEBUG </parameter>
+ </global>
+
+ <processor name="MyMCParticleFilter" type="MCParticleFilter">
+  <parameter name="MCParticlesCollection" type="string" lcioInType="MCParticle"> MCParticle </parameter>
+  <parameter name="OutputParticleCollectionName" value="MCDecayParticles" />
+  <parameter name="Printing" value="5" />
+ </processor> 
+
+ <processor name="MyTrackResponseAdjuster" type="TrackResponseAdjuster">
+  <parameter name="InputTrackCollectionName" value="MarlinTrkTracks" />
+  <parameter name="OutputTrackCollectionName" value="AdjustedTracks" /> 
+  <parameter name="D0ErrorScaleFactor" value="1.0" />
+  <parameter name="Z0ErrorScaleFactor" value="1.0" />
+  <parameter name="OmegaErrorScaleFactor" value="1.20" />
+  <parameter name="PhiErrorScaleFactor" value="1.0" />
+  <parameter name="TanLambdaErrorScaleFactor" value="1.0" />
+  <parameter name="Printing" value="5" />
+ </processor>
+
+ <processor name ="MyPhotonResponseAdjuster" type="PhotonResponseAdjuster">
+   <parameter name="InputParticleCollectionName" value="PandoraPFOs" />
+   <parameter name="OutputParticleCollectionName" value="AdjustedPhotons" />
+   <parameter name="EnergyScaleFactor" value="0.9437" />
+   <parameter name="Printing" value="5"/>
+<!-- direction smearing parameters -->
+   <parameter name="MCParticleCollection" type="string" lcioInType="MCParticle"> MCDecayParticles </parameter>
+   <parameter name="SmearAngles" value="1"/>
+   <parameter name="AngularSmearingModel" value="0"/>
+   <parameter name="dTheta" value=".001"/>
+   <parameter name="dPhi" value=".001"/>
+   <parameter name="AllowedEnergyDeviation" value="10.0"/>
+   <parameter name="AllowedAngularDeviation" value="10.0"/>
+ </processor>
+
+ <processor name="MyMassConstraintFitter" type="MassConstraintFitter">   
+    <parameter name="MCDecayParticles" type="string" lcioInType="MCParticle"> MCDecayParticles </parameter>
+    <parameter name="Printing" value="5" />
+    <parameter name="RootFile" value="MassConstraint_EtaPiPiGamma.root" />
+    <parameter name="parentPdg" value="221" />
+    <parameter name="parentMass" value="0.547862" />
+    <parameter name="parentCharge" value="0" />
+    <parameter name="nDaughters" value="3" />
+    <parameter name="nCharged" value="2" />
+    <parameter name="nNeutral" value="1" />
+    <parameter name="nNeutralParams" value="3" />
+    <parameter name="nChargedParams" value="3" />
+    <parameter name="daughterChargedPdgs" type="IntVec"> 211 </parameter>
+    <parameter name="daughterNeutralPdgs" type="IntVec"> 22 </parameter>
+    <parameter name="daughterChargedMass" type="FloatVec"> 0.13957018 </parameter>
+    <parameter name="daughterNeutralMass" type="FloatVec"> 0.0 </parameter>
+    <parameter name="MCParticlesCollection" type="string" lcioInType="MCParticle"> MCDecayParticles </parameter>
+    <parameter name="InputParticleCollectionName" value="AdjustedPhotons" />
+    <parameter name="InputTrackCollectionName" value="AdjustedTracks" />
+    <parameter name="FitProbabilityCut" value="0.005" />
+    <parameter name="AllowedMassDeviation" value="0.15" />
+    <parameter name="fitter" value="0" />
+    <parameter name="FitAnalysis" value="1" />
+    <parameter name="GeneratorAnalysis" value="1" />
+    <!-- secondary constraint parameters -->
+    <!-- <parameter name="nMassConstraints" value="1" /> -->
+ </processor>
+
+ <processor name="MyLCIOOutputProcessor" type="LCIOOutputProcessor">
+     <!--   standard output: full reconstruction keep all collections -->
+     <parameter name="LCIOOutputFile" type="string" >
+       ./myfile_OUT.slcio
+     </parameter>
+     <parameter name="LCIOWriteMode" type="string" value="WRITE_NEW"/>
+   
+ </processor>
+
+</marlin>

@@ -52,7 +52,7 @@ class MCParticleFilter : public Processor {
   virtual void processEvent( LCEvent * evt ) ; 
   
   
-  virtual void check( LCEvent * evt ) ; 
+  //virtual void check( LCEvent * evt ) ; 
   
   
   /** Called after data processing for clean up.
@@ -61,12 +61,12 @@ class MCParticleFilter : public Processor {
 
  protected:
 
-  int nEvt ;
+  int nEvt{};
 
  private:
 
-  int   _printing;
-  std::string _mcParticleCollectionName ;
-  std::string _outputParticleCollectionName;
+  int _printing{};
+  std::string _mcParticleCollectionName{};
+  std::string _outputParticleCollectionName{};
   
 } ;
