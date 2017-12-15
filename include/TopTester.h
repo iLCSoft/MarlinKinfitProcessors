@@ -35,7 +35,9 @@ class TopTester : public Processor {
  public:
   
   virtual Processor*  newProcessor() { return new TopTester ; }
-  
+
+  TopTester(const TopTester&) = delete ;
+  TopTester& operator=(const TopTester&) = delete ;  
   
   TopTester() ;
   
@@ -64,16 +66,16 @@ class TopTester : public Processor {
 
   /** Input parameter: center of mass energy, semileptonic?, which fitter.
    */
-  float _ecm;
-  bool _softmasses, _semileptonic, _traceall, _leptonasjet;
-  int _ifitter, _ievttrace, _ntoy; 
+  float _ecm{};
+  bool _softmasses{}, _semileptonic{}, _traceall{}, _leptonasjet{};
+  int _ifitter{}, _ievttrace{}, _ntoy{}; 
  
-  float prob, topmass, startmassW1, startmassW2;
-  float momentum[3], energy;
+  float prob{}, topmass{}, startmassW1{}, startmassW2{};
+  float momentum[3]{}, energy{};
            
-  int _nRun, _nEvt, nit;
+  int _nRun{}, _nEvt{}, nit{};
    
-  TopEventILC* topevent;
+  TopEventILC* topevent{};
  
 
   //output

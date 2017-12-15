@@ -112,8 +112,7 @@ void WW5CFit::init() {
   
 }
 
-void WW5CFit::processRunHeader( LCRunHeader* run) { 
-
+void WW5CFit::processRunHeader( LCRunHeader* ) { 
   _nRun++ ;
 } 
 
@@ -342,12 +341,12 @@ void WW5CFit::processEvent( LCEvent * evt ) {
        FourJetPairing pairing (jets);
        JetFitObject *permutedjets[NJETS];
 
-       double bestprob = 0.;
-       int bestnit = 0;
-       double bestmass1 = 0., bestmass2 = 0.;
-       double beststartmass1 = 0., beststartmass2 = 0.;
-       double startmass1 = 0., startmass2 = 0.;
-       double bestphotonenergy = 0.;
+       bestprob = 0.;
+       bestnit = 0;
+       bestmass1 = 0., bestmass2 = 0.;
+       beststartmass1 = 0., beststartmass2 = 0.;
+       startmass1 = 0., startmass2 = 0.;
+       bestphotonenergy = 0.;
 
        for (int iperm = 0; iperm < pairing.getNPerm(); iperm++) {
 
@@ -454,9 +453,9 @@ void WW5CFit::processEvent( LCEvent * evt ) {
          fitter.addConstraint (ec);
          fitter.addConstraint (w);
 
-         double prob = fitter.fit();
+         prob = fitter.fit();
          double chi2 = fitter.getChi2();
-         int nit = fitter.getIterations();
+         nit = fitter.getIterations();
 
          message<DEBUG>( log() << "fit probability = " << prob ) ;  
          message<DEBUG>( log() << "fit chi2 = " << chi2  ) ; 
@@ -523,7 +522,7 @@ void WW5CFit::processEvent( LCEvent * evt ) {
 
 
 
-void WW5CFit::check( LCEvent * evt ) { 
+void WW5CFit::check( LCEvent* ) { 
   // nothing to check here - could be used to fill checkplots in reconstruction processor
 }
 

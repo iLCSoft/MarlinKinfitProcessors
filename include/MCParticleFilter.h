@@ -68,5 +68,8 @@ class MCParticleFilter : public Processor {
   int _printing{};
   std::string _mcParticleCollectionName{};
   std::string _outputParticleCollectionName{};
-  
+  double _minDistanceSquared{};
+  double _maxDistanceSquared{};
+  int _minGenStatus{};
+  int _maxGenStatus{};
 } ;

@@ -128,8 +128,7 @@ void ZH5CFit::init() {
   
 }
 
-void ZH5CFit::processRunHeader( LCRunHeader* run) { 
-
+void ZH5CFit::processRunHeader( LCRunHeader* ) { 
   _nRun++ ;
 } 
 
@@ -404,12 +403,12 @@ void ZH5CFit::processEvent( LCEvent * evt ) {
        FourJetZHPairing pairing (jets);
        JetFitObject *permutedjets[NJETS];
 
-       double bestprob = 0.;
-       int bestnit = 0;
-       double bestmass1 = 0., bestmass2 = 0.;
-       double beststartmassZ = 0., beststartmassH = 0.;
-       double startmassZ = 0., startmassH = 0.;
-       double bestphotonenergy = 0.;
+       bestprob = 0.;
+       bestnit = 0;
+       //double bestmass1 = 0., bestmass2 = 0.;
+       beststartmassZ = 0., beststartmassH = 0.;
+       startmassZ = 0., startmassH = 0.;
+       bestphotonenergy = 0.;
        int besterr = 999;
        double bestzvalue = 10000.;
        double chi2startmassZ = 0., chi2startmassH = 0.;
@@ -532,9 +531,9 @@ void ZH5CFit::processEvent( LCEvent * evt ) {
            bestzvalue = fabs(startmassZ-91.2) + fabs(startmassH-125.);
          }
                   
-         double prob = fitter.fit();
+         prob = fitter.fit();
          double chi2 = fitter.getChi2();
-         int nit = fitter.getIterations();
+         nit = fitter.getIterations();
 
          message<MESSAGE>( log() << "fit probability = " << prob ) ;  
          message<MESSAGE>( log() << "fit chi2 = " << chi2  ) ; 
@@ -652,8 +651,8 @@ void ZH5CFit::processEvent( LCEvent * evt ) {
          hRecHMassNoFitFail->fill( chi2startmassH ) ;
          hRecZMassNoFitFail->fill( chi2startmassZ ) ;
        }
-#endif         message<MESSAGE>( log()  << "final mass of Z: " << z.getMass(1) ) ;
-
+#endif         
+       //message<MESSAGE>( log()  << "final mass of Z: " << z.getMass(1) ) ;
 
        delete j1;
        delete j2;
@@ -668,7 +667,7 @@ void ZH5CFit::processEvent( LCEvent * evt ) {
 
 
 
-void ZH5CFit::check( LCEvent * evt ) { 
+void ZH5CFit::check( LCEvent* ) { 
   // nothing to check here - could be used to fill checkplots in reconstruction processor
 }
 

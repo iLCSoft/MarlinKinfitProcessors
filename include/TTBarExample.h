@@ -49,10 +49,10 @@ class TTBarExample : public Processor {
   
   /** Called for every event - the working horse.
    */
-  virtual void processEvent( LCEvent * evt ) ; 
+  virtual void processEvent( LCEvent* evt ) ; 
   
   
-  virtual void check( LCEvent * evt ) ; 
+  virtual void check( LCEvent* evt ) ; 
   
   
   /** Called after data processing for clean up.
@@ -64,14 +64,14 @@ class TTBarExample : public Processor {
 
   /** Input collection name.
    */
-  std::string _lightjetcolName ;
-  std::string _bjetcolName ;
+  std::string _lightjetcolName{};
+  std::string _bjetcolName{};
   /** Input parameter: center of mass energy.
    */
-  float _ecm ;
+  float _ecm{};
 
-  int _nRun ;
-  int _nEvt ;
+  int _nRun{};
+  int _nEvt{};
 } ;
 
 #endif

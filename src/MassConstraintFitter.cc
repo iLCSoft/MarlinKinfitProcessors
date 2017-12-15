@@ -440,6 +440,9 @@ bool MassConstraintFitter::FindMCParticles( LCEvent* evt ){
     }
   }
 
+  if(_printing>1)std::cout << "Find MCParticles : " << tf << std::endl;
+  if(_printing>1)std::cout << "Generator photons found : " << PhotonEnergies.size() << std::endl; 
+
 // Calculate variable that is close to costh*.    (actually asymmetry = beta x costh* )
   EnergyAsymmetryGen = -2.0;
 
@@ -449,10 +452,11 @@ bool MassConstraintFitter::FindMCParticles( LCEvent* evt ){
      double e2 = PhotonEnergies[1];
      EnergyAsymmetryGen = fabs(e1-e2)/(e1+e2);
   }
+  if(_printing>1)std::cout << "Energy asymmetry : " << EnergyAsymmetryGen << std::endl; 
 
   PhotonEnergies.clear();
  
-  if(_printing>1)std::cout << "Find MCParticles : " << tf << std::endl; 
+
 
   return tf;
 }
@@ -1409,7 +1413,7 @@ void MassConstraintFitter::clear(){
 
 
 
-        delete fitter;
+      //DF  delete fitter;
 		
 }
 //===================================================================================
@@ -1614,7 +1618,7 @@ void MassConstraintFitter::FindMassConstraintCandidates(LCCollectionVec * recpar
 							neutralJets.clear();
 							TrackFO.clear();
 //							std::cout<<"about to del "<<std::endl;
-							delete fitter;
+							//DF delete fitter;
 						}
 					}
 				}
@@ -1643,7 +1647,7 @@ void MassConstraintFitter::FindMassConstraintCandidates(LCCollectionVec * recpar
 			neutralJets.clear();
 			TrackFO.clear();
 //			std::cout<<"about to del "<<std::endl;
-			delete fitter;
+			//DF delete fitter;
 //			std::cout<<"after del "<<std::endl;
 			chargeSum=0.0;
 		}
@@ -1694,7 +1698,7 @@ void MassConstraintFitter::FindMassConstraintCandidates(LCCollectionVec * recpar
 							neutralJets.clear();
 							TrackFO.clear();
 //							std::cout<<"about to del "<<std::endl;
-							delete fitter;
+							//DF delete fitter;
 						}
 					}
 
@@ -1721,7 +1725,7 @@ void MassConstraintFitter::FindMassConstraintCandidates(LCCollectionVec * recpar
 			neutralJets.clear();
 			TrackFO.clear();
 //			std::cout<<"about to del "<<std::endl;
-			delete fitter;
+			//DF delete fitter;
 //			std::cout<<"after del "<<std::endl;
 			chargeSum=0.0;
 		}
@@ -1761,7 +1765,7 @@ void MassConstraintFitter::FindMassConstraintCandidates(LCCollectionVec * recpar
 							neutralJets.clear();
 							TrackFO.clear();
 //							std::cout<<"about to del "<<std::endl;
-							delete fitter;
+							//DF delete fitter;
 						}
 					}
 
@@ -1786,7 +1790,7 @@ void MassConstraintFitter::FindMassConstraintCandidates(LCCollectionVec * recpar
 			neutralJets.clear();
 			TrackFO.clear();
 //			std::cout<<"about to del "<<std::endl;
-			delete fitter;
+			//DF delete fitter;
 //			std::cout<<"after del "<<std::endl;
 			chargeSum=0.0;
 			}
