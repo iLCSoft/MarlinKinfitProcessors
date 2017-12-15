@@ -35,6 +35,8 @@ class DijetTester : public Processor {
   
   virtual Processor*  newProcessor() { return new DijetTester ; }
   
+  DijetTester(const DijetTester&) = delete ;
+  DijetTester& operator=(const DijetTester&) = delete ;
   
   DijetTester() ;
   
@@ -63,16 +65,16 @@ class DijetTester : public Processor {
 
   /** Input parameter: center of mass energy, leptonic?, which fitter.
    */
-  float _ecm;
-  bool _leptonic, _traceall, _leptonasjet;
-  int _ifitter, _ievttrace, _ntoy; 
+  float _ecm{};
+  bool _leptonic{}, _traceall{}, _leptonasjet{};
+  int _ifitter{}, _ievttrace{}, _ntoy{}; 
  
-  float prob;
-  float momentum[3], energy;
+  float prob{};
+  float momentum[3]{}, energy{};
            
-  int _nRun, _nEvt, nit;
+  int _nRun{}, _nEvt{}, nit{};
    
-  DijetEventILC* dijetevent;
+  DijetEventILC* dijetevent{};
  
 
   //output

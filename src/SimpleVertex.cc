@@ -58,7 +58,7 @@ void SimpleVertexProcessor::init() {
   return;
 }
 
-void SimpleVertexProcessor::processRunHeader( LCRunHeader* run) {
+void SimpleVertexProcessor::processRunHeader( LCRunHeader* ) {
   message<MESSAGE>( log()  << "hello from SimpleVertexProcessor::processRunHeader");
 }
 
@@ -220,7 +220,7 @@ void SimpleVertexProcessor::processEvent( LCEvent * evt ) {
 
 
 
-void SimpleVertexProcessor::check( LCEvent * evt ) {
+void SimpleVertexProcessor::check( LCEvent* ) {
   // nothing to check here - could be used to fill checkplots in reconstruction processor
 }
 

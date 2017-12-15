@@ -73,8 +73,7 @@ void TTBarExample::init() {
   
 }
 
-void TTBarExample::processRunHeader( LCRunHeader* run) { 
-
+void TTBarExample::processRunHeader( LCRunHeader* ) { 
   _nRun++ ;
 } 
 
@@ -432,7 +431,7 @@ void TTBarExample::processEvent( LCEvent * evt ) {
 
 
 
-void TTBarExample::check( LCEvent * evt ) { 
+void TTBarExample::check( LCEvent* ) { 
   // nothing to check here - could be used to fill checkplots in reconstruction processor
 }
 

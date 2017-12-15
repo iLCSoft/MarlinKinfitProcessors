@@ -89,7 +89,7 @@ void DijetTester::init() {
   
 }
 
-void DijetTester::processRunHeader( LCRunHeader* run) { 
+void DijetTester::processRunHeader( LCRunHeader* ) { 
   _nRun++ ;
 } 
 
@@ -376,15 +376,15 @@ void DijetTester::processEvent( LCEvent * evt ) {
            
      int ierr = dijetevent->fitEvent(fitter);
   
-     double prob = fitter.getProbability();
+     prob = fitter.getProbability();
      double chi2 = fitter.getChi2();
-     int nit = fitter.getIterations();
+     nit = fitter.getIterations();
 
      message<DEBUG>( log() << "fit probability = " << prob ) ;  
      message<DEBUG>( log() << "fit chi2 = " << chi2  ) ; 
      message<DEBUG>( log() << "error code: " << ierr ) ;
                                   
-     bool usesigma_evt = true;
+     //bool usesigma_evt = true;
                   
 #ifdef MARLIN_USE_AIDA
      hFitError->fill( ierr ) ;
@@ -420,7 +420,7 @@ void DijetTester::processEvent( LCEvent * evt ) {
              message<WARNING>( log() << " SIGMA <= 0, taking only measured errors for pull for ifo = " << ifo 
                                      << " in evt " << ievt << ", errmea =  " << errmea << ", errfit = " << errfit ) ;
              usesigma[ipar] = false;
-             usesigma_evt = false;
+             //usesigma_evt = false;
            }  
            pull[ipar] = (dijetevent->getFittedFitObject(ifo)->getParam(ipar) - start)/sigma;
            pullmea[ipar] = (dijetevent->getFittedFitObject(ifo)->getParam(ipar) - start)/errmea;
@@ -465,7 +465,7 @@ void DijetTester::processEvent( LCEvent * evt ) {
 
 
 
-void DijetTester::check( LCEvent * evt ) { 
+void DijetTester::check( LCEvent* ) { 
   // nothing to check here - could be used to fill checkplots in reconstruction processor
 }
 

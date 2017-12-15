@@ -94,7 +94,7 @@ void TopTester::init() {
   
 }
 
-void TopTester::processRunHeader( LCRunHeader* run) { 
+void TopTester::processRunHeader( LCRunHeader* ) { 
   _nRun++ ;
 } 
 
@@ -523,7 +523,7 @@ void TopTester::processEvent( LCEvent * evt ) {
   
      message<MESSAGE>( log()  << "start to process toy event number " << ievt ) ;
      
-     double startmassW1 = 0., startmassW2 = 0.;
+     // double startmassW1 = 0., startmassW2 = 0.;
      double startmasstop1 = 0., startmasstop2 = 0.;
      
      int debug = 0;
@@ -582,10 +582,10 @@ void TopTester::processEvent( LCEvent * evt ) {
 
      int ierr = topevent->fitEvent(fitter);
   
-     double prob = fitter.getProbability();
+     prob = fitter.getProbability();
      if (prob < 0.002) message<WARNING>( log() << "fit probability = " << prob << " in TOY EVENT " << ievt ) ;  
      double chi2 = fitter.getChi2();
-     int nit = fitter.getIterations();
+     nit = fitter.getIterations();
 
      message<MESSAGE>( log() << "fit probability = " << prob ) ;  
      message<MESSAGE>( log() << "fit chi2 = " << chi2  ) ; 
@@ -596,7 +596,7 @@ void TopTester::processEvent( LCEvent * evt ) {
      message<MESSAGE>( log()  << "final mass of top 1: " << topevent->getTop1Mass() ) ;
      message<MESSAGE>( log()  << "final mass of top 2: " << topevent->getTop2Mass() ) ;
        
-     bool usesigma_evt = true;
+     //bool usesigma_evt = true;
                   
 #ifdef MARLIN_USE_AIDA
      hFitError->fill( ierr ) ;
@@ -631,7 +631,7 @@ void TopTester::processEvent( LCEvent * evt ) {
          double truth, start, fitted;
          double pull[3], pulltrue[3], pullsmear[3];
          double dist[3], disttrue[3], distsmear[3];
-         bool usesigma[3];
+         //bool usesigma[3];
          for (int ipar = 0; ipar < 3; ipar++) {
            errfit = topevent->getFittedFitObject(ifo)->getError(ipar);  // should make difference for NewtonFitter
            errmea = topevent->getStartFitObject(ifo)->getError(ipar);  // SmearedFO are not fitted: original errors
@@ -649,7 +649,7 @@ void TopTester::processEvent( LCEvent * evt ) {
                                    << " in evt " << ievt << ", errmea =  " << errmea << ", errfit = " << errfit ) ;
            if (sigma > 0) {
              sigma = sqrt(sigma);
-             usesigma[ipar] = true;
+             //usesigma[ipar] = true;
            }
            else {
              message<WARNING>( log() << " SIGMA <= 0, taking only fitted errors for pull for ifo = " << ifo 
@@ -664,8 +664,8 @@ void TopTester::processEvent( LCEvent * evt ) {
              message<WARNING>( log()  << "final mass of top 1: " << topevent->getTop1Mass() ) ;
              message<WARNING>( log()  << "final mass of top 2: " << topevent->getTop2Mass() ) ;
              sigma = errfit*errfit;
-             usesigma[ipar] = false;
-             usesigma_evt = false;
+             //usesigma[ipar] = false;
+             //usesigma_evt = false;
            } 
            
            dist[ipar] = (fitted - start);
@@ -726,7 +726,7 @@ void TopTester::processEvent( LCEvent * evt ) {
 
 
 
-void TopTester::check( LCEvent * evt ) { 
+void TopTester::check( LCEvent * ) { 
   // nothing to check here - could be used to fill checkplots in reconstruction processor
 }
 

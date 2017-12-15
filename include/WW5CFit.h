@@ -35,7 +35,9 @@ class WW5CFit : public Processor {
  public:
   
   virtual Processor*  newProcessor() { return new WW5CFit ; }
-  
+
+  WW5CFit(const WW5CFit&) = delete ;
+  WW5CFit& operator=(const WW5CFit&) = delete ;  
   
   WW5CFit() ;
   
@@ -66,24 +68,24 @@ class WW5CFit : public Processor {
 
   /** Input collection name.
    */
-  std::string _jetcolName, _name,_OutputCollection ;
+  std::string _jetcolName{}, _name{},_OutputCollection{} ;
   /** Input parameter: center of mass energy.
    */
-  float _ecm, _isrpzmax;
-  int _fitISR, _ifitter, _ievttrace;
-  bool _traceall;
+  float _ecm{}, _isrpzmax{};
+  int _fitISR{}, _ifitter{}, _ievttrace{};
+  bool _traceall{};
 
-  double b, ISRPzMaxB;
+  double b{}, ISRPzMaxB{};
 
  
-  float prob, bestprob, bestnit, bestmass1, bestmass2, beststartmass1, beststartmass2, bestphotonenergy, startmass1, startmass2, variable;
-  float momentum[3], energy;
+  float prob{}, bestprob{}, bestnit{}, bestmass1{}, bestmass2{}, beststartmass1{}, beststartmass2{}, bestphotonenergy{}, startmass1{}, startmass2{}, variable{};
+  float momentum[3]{}, energy{};
            
-  int _nRun, _nEvt, nit;
+  int _nRun{}, _nEvt{}, nit{};
  
-  int bestperm, errorflag;
+  int bestperm{}, errorflag{};
   
-  TopEventILC* topevent;
+  TopEventILC* topevent{};
  
 
   //output
@@ -92,6 +94,4 @@ class WW5CFit : public Processor {
 } ;
 
 #endif
-
-
 

@@ -20,7 +20,8 @@ MarlinKinfitProcessors is distributed under the [GPLv3 License](http://www.gnu.o
 
 * SimpleVertex: this performs a simple space-point fit of two charged tracks to a single vertex. It assumes events with two tracks (e.g. the single k0short events in example_data/kaon0S_DST.slcio)
 
-* Pi0Fitter: provides an example of how to use MassConstraintFitter for pi0 -> gamma gamma (purely photons)
+* Pi0Fitter: provides an example of how to use MassConstraintFitter for pi0 -> gamma gamma (purely photons).
+  Example updated to reflect appropriate settings for test production single particle samples (no smearing now).
 
 * Jpsi_MuMu: MassConstraintFitter example for J/psi -> mu+ mu- (purely tracks)
 

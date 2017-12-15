@@ -11,6 +11,9 @@ class SimpleVertexProcessor : public Processor {
  public:
   
   virtual Processor*  newProcessor() { return new SimpleVertexProcessor ; }
+
+  SimpleVertexProcessor(const SimpleVertexProcessor&) = delete ;
+  SimpleVertexProcessor& operator=(const SimpleVertexProcessor&) = delete ;
   
   SimpleVertexProcessor() ;
   
@@ -35,9 +38,9 @@ class SimpleVertexProcessor : public Processor {
 
  protected:
 
-  bool _traceall;
-  int _ievttrace; 
-  OPALFitterGSL* _opalFit;
+  bool _traceall=false;
+  int _ievttrace{}; 
+  OPALFitterGSL* _opalFit{};
 
 };
 

@@ -224,7 +224,7 @@ private:
  // LeptonFitObject* part2;
    std::vector<LeptonFitObject*> TrackFO{}; 
  //   std::vector<TrackParticleFitObject*> TrackFO;
-   OPALFitterGSL* fitter{};
+ //  OPALFitterGSL* fitter{};
 //    BaseFitter* ftest;
 
   std::vector<ReconstructedParticle*>_pfovec{};

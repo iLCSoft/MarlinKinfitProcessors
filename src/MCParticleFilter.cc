@@ -20,6 +20,27 @@ MCParticleFilter::MCParticleFilter() : Processor("MCParticleFilter") {
                               _printing,
                                (int)1 ) ;
 
+  // Cuts to select MC particles to consider
+  registerProcessorParameter( "MinGenStatus" , 
+                              "Minimum Generator Status Value"  ,
+                              _minGenStatus,
+                               (int)1 ) ;
+
+  registerProcessorParameter( "MaxGenStatus" , 
+                              "Maximum Generator Status Value"  ,
+                              _maxGenStatus,
+                               (int)1 ) ;
+
+  registerProcessorParameter( "MinDistanceSquared" , 
+                              "Minimum Distance Squared (mm^2)"  ,
+                              _minDistanceSquared,
+                               (double) -1.0 ) ;
+
+  registerProcessorParameter( "MaxDistanceSquared" , 
+                              "Maximum Distance Squared (mm^2)"  ,
+                              _maxDistanceSquared,
+                               (double) 1.0 ) ;
+
   registerInputCollection( LCIO::MCPARTICLE,
 			   "MCParticleCollection" , 
 			   "Name of the MCParticle input collection"  ,
@@ -32,6 +53,7 @@ MCParticleFilter::MCParticleFilter() : Processor("MCParticleFilter") {
                              "Output Particle Collection Name "  ,
                              _outputParticleCollectionName,
                              outputParticleCollectionName);
+
 }
 
 
@@ -85,8 +107,11 @@ void MCParticleFilter::processEvent( LCEvent * evt ) {
     // Put conditional statements here to positively select MCParticles
 
     // Add this MCParticle to the output collection
-    // Quick hack - require stable particles for the output collection 
-    if(rsq<1.0 && mcp->getGeneratorStatus()==1)mcparcol->addElement(mcp);
+    // Was a quick hack to require stable particles for the output collection which worked for my PYTHIA generated pi0s.
+    // if(rsq<1.0 && mcp->getGeneratorStatus()==1)mcparcol->addElement(mcp);
+
+    if( rsq > _minDistanceSquared && rsq < _maxDistanceSquared 
+        && mcp->getGeneratorStatus() >= _minGenStatus && mcp->getGeneratorStatus() <= _maxGenStatus ) mcparcol->addElement(mcp);
        
   } // end loop over MCParticles
   
