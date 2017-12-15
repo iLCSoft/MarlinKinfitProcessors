@@ -46,8 +46,8 @@ void MCParticleFilter::init() {
 
 }
 
-void MCParticleFilter::processRunHeader( LCRunHeader* run) { 
-    
+void MCParticleFilter::processRunHeader( LCRunHeader* run) {
+  streamlog_out(MESSAGE) << " processRunHeader "  << run->getRunNumber() << std::endl ;    
 }
  
 
@@ -98,10 +98,6 @@ void MCParticleFilter::processEvent( LCEvent * evt ) {
   
 //  cout << "======================================== event " << nEvt << std::endl ;
   
-}
-
-void MCParticleFilter::check( LCEvent * evt ) { 
-
 }
 
 void MCParticleFilter::end(){ 

@@ -48,7 +48,7 @@ TrackResponseAdjuster::TrackResponseAdjuster() : Processor("TrackResponseAdjuste
                                 _inputTrackCollectionName,
                                 inputTrackCollectionName);  
 
-  std::string outputTrackCollectionName = "CalibratedTracks";
+  std::string outputTrackCollectionName = "AdjustedTracks";
   registerOutputCollection( LCIO::TRACK,
 			    "OutputTrackCollectionName",
 			    "Output Track Collection Name",
@@ -71,7 +71,7 @@ void TrackResponseAdjuster::init() {
 }
 
 void TrackResponseAdjuster::processRunHeader( LCRunHeader* run) {
-
+  streamlog_out(MESSAGE) << " processRunHeader "  << run->getRunNumber() << std::endl ;
 }
 
 bool TrackResponseAdjuster::FindTracks( LCEvent* evt ) {
@@ -82,9 +82,9 @@ bool TrackResponseAdjuster::FindTracks( LCEvent* evt ) {
   _trackvec.clear();
   typedef const std::vector<std::string> StringVec ;
   StringVec* strVec = evt->getCollectionNames() ;
-  for(StringVec::const_iterator name=strVec->begin(); name!=strVec->end(); name++){
-    if(*name==_inputTrackCollectionName){
-      LCCollection* col = evt->getCollection(*name);
+  for(StringVec::const_iterator itname=strVec->begin(); itname!=strVec->end(); itname++){
+    if(*itname==_inputTrackCollectionName){
+      LCCollection* col = evt->getCollection(*itname);
       unsigned int nelem = col->getNumberOfElements();
       tf = true;
       for(unsigned int i=0;i<nelem;i++){
@@ -119,7 +119,7 @@ void TrackResponseAdjuster::processEvent( LCEvent * evt ) {
  std::cout<<"track vector size "<<_trackvec.size()<<std::endl;
 
 
-	for(int i =0; i<_trackvec.size(); i++){
+	for(unsigned int i =0; i<_trackvec.size(); i++){
 		
 			TrackImpl* CalTrack = new TrackImpl();
 
@@ -127,7 +127,7 @@ void TrackResponseAdjuster::processEvent( LCEvent * evt ) {
 			
 			std::vector<float> newcov;
 			//deep copy
-			for(int j=0; j<_trackvec.at(i)->getCovMatrix().size(); j++){
+			for(unsigned int j=0; j<_trackvec.at(i)->getCovMatrix().size(); j++){
 				newcov.push_back((double)_trackvec.at(i)->getCovMatrix().at(j));
 			}
 			
@@ -177,12 +177,12 @@ void TrackResponseAdjuster::processEvent( LCEvent * evt ) {
 				
 				std::cout<<"Event No. :"<< nEvt <<std::endl;
 				std::cout<<"old matrix"<<std::endl;
-				for(int j=0; j<_trackvec.at(i)->getCovMatrix().size(); j++){
+				for(unsigned int j=0; j<_trackvec.at(i)->getCovMatrix().size(); j++){
 					std::cout<<_trackvec.at(i)->getCovMatrix().at(j)<<" ";
 				}
 				std::cout<<std::endl;
 				std::cout<<"new matrix"<<std::endl;
-				for(int j=0; j<newcov.size(); j++){
+				for(unsigned int j=0; j<newcov.size(); j++){
 					std::cout<<newcov.at(j)<<" ";
 				}
 				std::cout<<std::endl;

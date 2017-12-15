@@ -1,0 +1,77 @@
+<!--#############################################################-->
+<!--#                                                           #-->
+<!--#     Example steering file for Marlin                      #-->
+<!--# for finding and fitting H -> mu+ mu- mu+ mu-  candidates  #-->
+<!--#                                                           #-->
+<!--#                H -> mu+ mu- mu+ mu-                       #--> 
+<!--#                                                           #-->
+<!--#############################################################-->
+
+<marlin>
+ <execute>
+   <processor name="MyMCParticleFilter" />
+   <processor name="MyTrackResponseAdjuster" />
+   <processor name="MyMassConstraintFitter"/>
+   <!-- <processor name="MyLCIOOutputProcessor"/> -->
+ </execute>
+
+ <global>
+   <parameter name="LCIOInputFiles"> /nfs/dust/ilc/user/wilson/RECO_1904/Hto4mu_10000_REC.slcio </parameter> 
+   <parameter name="SkipNEvents" value="0" />
+   <parameter name="MaxRecordNumber" value="0" /> <!-- 0 is all events -->
+   <parameter name="SupressCheck" value="false" />
+   <parameter name="GearXMLFile" value="gear_ILD_l4_v02_dd4hep.xml" />
+   <parameter name="Verbosity" options="DEBUG0-4,MESSAGE0-4,WARNING0-4,ERROR0-4,SILENT"> DEBUG </parameter>
+ </global>
+
+ <processor name="MyMCParticleFilter" type="MCParticleFilter">
+  <parameter name="MCParticleCollection" type="string" lcioInType="MCParticle"> MCParticle </parameter>
+  <parameter name="OutputParticleCollectionName" value="MCDecayParticles" />
+  <parameter name="Printing" value="5" />
+ </processor> 
+
+ <processor name="MyTrackResponseAdjuster" type="TrackResponseAdjuster">
+  <parameter name="InputTrackCollectionName" value="MarlinTrkTracks" />
+  <parameter name="OutputTrackCollectionName" value="AdjustedTracks" /> 
+  <parameter name="D0ErrorScaleFactor" value="1.0" />
+  <parameter name="Z0ErrorScaleFactor" value="1.0" />
+  <parameter name="OmegaErrorScaleFactor" value="1.20" />
+  <parameter name="PhiErrorScaleFactor" value="1.0" />
+  <parameter name="TanLambdaErrorScaleFactor" value="1.0" />
+  <parameter name="Printing" value="5" />
+ </processor>
+
+ <processor name="MyMassConstraintFitter" type="MassConstraintFitter">
+    <parameter name="MCParticleCollection" type="string" lcioInType="MCParticle"> MCDecayParticles </parameter>
+    <parameter name="Printing" value="5" />
+    <parameter name="RootFile" value="MassConstraint_Higgs_4Mu.root" />
+    <parameter name="parentPdg" value="25" />
+    <parameter name="parentMass" value="125.0" />
+    <parameter name="parentCharge" value="0" />
+    <parameter name="nDaughters" value="4" />
+    <parameter name="nCharged" value="4" />
+    <parameter name="nNeutral" value="0" />
+    <parameter name="nNeutralParams" value="3" />
+    <parameter name="nChargedParams" value="3" />
+    <parameter name="daughterChargedPdgs" type="IntVec"> 13 </parameter>
+    <parameter name="daughterNeutralPdgs" type="IntVec"> 0 </parameter>
+    <parameter name="daughterChargedMass" type="FloatVec"> .1056583715 </parameter>
+    <parameter name="daughterNeutralMass" type="FloatVec"> 0.0 </parameter>
+    <parameter name="InputParticleCollectionName" type="string" lcioInType="ReconstructedParticle" value="PandoraPFOs" />
+    <parameter name="InputTrackCollectionName" value="AdjustedTracks" />
+    <parameter name="FitProbabilityCut" value="0.005" />
+    <parameter name="AllowedMassDeviation" value="0.8" />
+    <parameter name="fitter" value="0" />
+    <parameter name="FitAnalysis" value="1" />
+    <parameter name="GeneratorAnalysis" value="1" />
+ </processor>
+
+ <processor name="MyLCIOOutputProcessor" type="LCIOOutputProcessor">
+     <!--   standard output: full reconstruction keep all collections -->
+     <parameter name="LCIOOutputFile" type="string" >
+       ./myfile_OUT.slcio
+     </parameter>
+     <parameter name="LCIOWriteMode" type="string" value="WRITE_NEW"/>   
+ </processor>
+
+</marlin>

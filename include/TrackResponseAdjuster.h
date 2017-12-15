@@ -1,16 +1,14 @@
 #include "marlin/Processor.h"
-
 #include "EVENT/Track.h"
-
 #include "lcio.h"
+#include "TFile.h"
 #include <vector>
 #include "IMPL/LCCollectionVec.h"
-#include "TFile.h"
-
 #include "IMPL/ParticleIDImpl.h"
-
 #include "IMPL/TrackImpl.h"
-using namespace lcio ;
+
+using namespace lcio;
+
 	/** TrackResponseAdjuster:<br>
  *
  * 
@@ -18,12 +16,14 @@ using namespace lcio ;
  * 
  */
 
-
  class TrackResponseAdjuster : public marlin::Processor {
 
  public:
 
  virtual marlin::Processor*  newProcessor() { return new TrackResponseAdjuster ; }
+
+  TrackResponseAdjuster(const TrackResponseAdjuster&) = delete ;
+  TrackResponseAdjuster& operator=(const TrackResponseAdjuster&) = delete ;
 
   TrackResponseAdjuster() ;
 
@@ -44,25 +44,24 @@ using namespace lcio ;
    */
   virtual void end() ;
 
- 
   bool FindTracks(LCEvent* evt);
  
   double safeAcos(double x);
  
   private:
-  int nEvt;
+  int nEvt{};
   
-   std::vector<Track*> _trackvec;
-  int   _printing;
+  std::vector<Track*> _trackvec{};
+  int   _printing{};
 
-  double _D0ErrorScaleFactor;
-  double _Z0ErrorScaleFactor;
-  double _OmegaErrorScaleFactor;
-  double _PhiErrorScaleFactor;
-  double _TanLambdaErrorScaleFactor;
+  double _D0ErrorScaleFactor{};
+  double _Z0ErrorScaleFactor{};
+  double _OmegaErrorScaleFactor{};
+  double _PhiErrorScaleFactor{};
+  double _TanLambdaErrorScaleFactor{};
   
 // _inputTrackCollectionName 
-  std::string _outputTrackCollectionName;
-  std::string _inputTrackCollectionName;
-  std::string m_rootFile;
+  std::string _outputTrackCollectionName{};
+  std::string _inputTrackCollectionName{};
+//  std::string m_rootFile{};
 };
