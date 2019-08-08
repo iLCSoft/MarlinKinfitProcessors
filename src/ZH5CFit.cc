@@ -564,8 +564,6 @@ void ZH5CFit::processEvent( LCEvent * evt ) {
             message<MESSAGE>( log()  << "final four-vector of ISR photon: " << *(photon) ) ;
 	 }
 
-         message<MESSAGE>( log()  << "final mass of Z: " << z.getMass(1) ) ;
-	 message<MESSAGE>( log()  << "final mass of H: " << h.getMass(1) ) ;
 
          int ierr = fitter.getError();
          hFitError->fill( ierr ) ;
@@ -642,27 +640,27 @@ void ZH5CFit::processEvent( LCEvent * evt ) {
            }
          }
          else {
-           message<WARNING>( log() << "FIT ERROR = " << fitter.getError()
+            message<WARNING>( log() << "FIT ERROR = " << fitter.getError()
                                    << " in event " << evt->getEventNumber()
                                    << " for permutation " << iperm
                                    << ", not filling histograms!"  ) ;
-           message<WARNING>( log()  << "start mass of Z: " << startmassZ) ;
-	   message<WARNING>( log()  << "start mass of H: " << startmassH ) ;
-           message<WARNING>( log()  << "final mass of Z: " << z.getMass(1) ) ;
-	   message<WARNING>( log()  << "final mass of H: " << h.getMass(1) ) ;
+                                   message<WARNING>( log()  << "start mass of Z: " << startmassZ) ;
+	          message<WARNING>( log()  << "start mass of H: " << startmassH ) ;
+            message<WARNING>( log()  << "final mass of Z: " << z.getMass(1) ) ;
+	          message<WARNING>( log()  << "final mass of H: " << h.getMass(1) ) ;
 
 	 }
          delete photon;
-         message<MESSAGE>( log() << "end permutation.......... ") ;
+         message<MESSAGE>( log() << "end permutation") ;
        }//permutation ends
 
 
       ISRfitrec->setMomentum(ISRmomentum);
       ISRfitrec->setEnergy(bestphotonenergy);
-      message<MESSAGE>( log() << " Energy ISR:   "
+      message<DEBUG>( log() << " Energy ISR:   "
                          << ISRfitrec->getEnergy()) ;
       ISRfitrec->setType (22);
-      message<MESSAGE>( log() << " IS ISR:   "
+      message<DEBUG>( log() << " IS ISR:   "
                          << ISRfitrec->getType()) ;
       OutputCol->addElement(ISRfitrec);
 
@@ -687,9 +685,9 @@ void ZH5CFit::processEvent( LCEvent * evt ) {
       Hfitrec->setEnergy(permutedjets[2]->getE()+permutedjets[3]->getE());
       message<DEBUG>( log() << " Energy H:   "
                          << Hfitrec->getEnergy()) ;
-      Zfitrec->setMass(bestmassH);
-      message<DEBUG>( log() << " Mass Z:   "
-                         << Zfitrec->getMass()) ;
+      Hfitrec->setMass(bestmassH);
+      message<DEBUGDEBUG>( log() << " Mass H:   "
+                         << Hfitrec->getMass()) ;
       Hfitrec->setType (25);
       message<DEBUG>( log() << " IS H:   "
                          << Hfitrec->getType()) ;
