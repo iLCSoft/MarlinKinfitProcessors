@@ -686,7 +686,7 @@ void ZH5CFit::processEvent( LCEvent * evt ) {
       message<DEBUG>( log() << " Energy H:   "
                          << Hfitrec->getEnergy()) ;
       Hfitrec->setMass(bestmassH);
-      message<DEBUGDEBUG>( log() << " Mass H:   "
+      message<DEBUG>( log() << " Mass H:   "
                          << Hfitrec->getMass()) ;
       Hfitrec->setType (25);
       message<DEBUG>( log() << " IS H:   "
