@@ -113,11 +113,17 @@ ZH5CFit::ZH5CFit() : Processor("ZH5CFit") {
                               _ievttrace,
                               (int)0);
 
+
   registerOutputCollection( LCIO::RECONSTRUCTEDPARTICLE,
                             "FitOutputColection",
                 		        " Output Fit Colection" ,
                 		         _OutCol,
                             std::string("FitReco")) ;
+  registerProcessorParameter("outputFilename",
+         "name of output file",
+         _outfile,
+          std::string("")
+  );
 }
 
 
@@ -133,6 +139,23 @@ void ZH5CFit::init() {
   //= 2*alpha/pi*( ln(s/m_e^2)-1 )
   ISRPzMaxB = std::pow((double)_isrpzmax,b);
 
+  _fout = new TFile(_outfile.c_str(),"recreate");
+
+   ZHTree = new TTree("ZHTree","ZHTree");
+   ZHTree->Branch("Hmass_before_fit_best",&Hmass_before_fit,"Hmass_before_fit/F") ;
+   ZHTree->Branch("Hmass_after_fit_best",&Hmass_after_fit,"Hmass_after_fit/F") ;
+   ZHTree->Branch("hpull_jet1_E_best",&hpull_jet1_E,"hpull_jet1_E") ;
+   ZHTree->Branch("hpull_jet2_E_best",&hpull_jet2_E,"hpull_jet2_E") ;
+   ZHTree->Branch("hpull_jet3_E_best",&hpull_jet3_E,"hpull_jet3_E") ;
+   ZHTree->Branch("hpull_jet4_E_best",&hpull_jet4_E,"hpull_jet4_E") ;
+   ZHTree->Branch("hpull_jet1_th_best",&hpull_jet1_th,"hpull_jet1_th") ;
+   ZHTree->Branch("hpull_jet2_th_best",&hpull_jet2_th,"hpull_jet2_th") ;
+   ZHTree->Branch("hpull_jet3_th_best",&hpull_jet3_th,"hpull_jet3_th") ;
+   ZHTree->Branch("hpull_jet4_th_best",&hpull_jet4_th,"hpull_jet4_th") ;
+   ZHTree->Branch("hpull_jet1_phi_best",&hpull_jet1_phi,"hpull_jet1_phi") ;
+   ZHTree->Branch("hpull_jet2_phi_best",&hpull_jet2_phi,"hpull_jet2_phi") ;
+   ZHTree->Branch("hpull_jet3_phi_best",&hpull_jet3_phi,"hpull_jet3_phi") ;
+   ZHTree->Branch("hpull_jet4_phi_best",&hpull_jet4_phi,"hpull_jet4_phi") ;
 }
 
 void ZH5CFit::processRunHeader( LCRunHeader* ) {
@@ -148,6 +171,7 @@ void ZH5CFit::processEvent( LCEvent * evt ) {
 		      ) ;
   // this gets called for every event
   // usually the working horse ...
+
 
   int debug = 0;
   if ( evt->getEventNumber() == _ievttrace || _traceall) debug = 10;
@@ -189,7 +213,7 @@ void ZH5CFit::processEvent( LCEvent * evt ) {
       createHistogram1D( "hRecHMassAll", "M_H", 200, 0., 250. ) ;
     hRecHMassNoFitBest =
       AIDAProcessor::histogramFactory(this)->
-      createHistogram1D( "hRecHMassNoFitBest", "M_H", 200, 0., 250. ) ;
+      createHistogram1D( "hRecHMassNoFitBest", "M_H", 500, 0., 500. ) ;
     hRecZMassNoFitBest =
       AIDAProcessor::histogramFactory(this)->
       createHistogram1D( "hRecZMassNoFitBest", "M_Z", 200, 0., 250. ) ;
@@ -298,7 +322,7 @@ void ZH5CFit::processEvent( LCEvent * evt ) {
 
        ReconstructedParticle* jrps[4];
 
-       for(int i=0; i< nJETS ; i++){
+       for(int i=0; i< nJETS ; i++){//loop over nJets
 
           ReconstructedParticle* j = dynamic_cast<ReconstructedParticle*>( jetcol->getElementAt( i ) ) ;
 
@@ -338,7 +362,7 @@ void ZH5CFit::processEvent( LCEvent * evt ) {
              hJetMass->fill(j->getMass());
 #endif
 } //end of   if (reco particle j!=0)
-       }
+}//end loop over nJets
 #ifdef MARLIN_USE_AIDA
        double en, px, py, pz, mass;
        if (jrps[0] && jrps[1] && jrps[2] && jrps[3]) {
@@ -626,6 +650,18 @@ void ZH5CFit::processEvent( LCEvent * evt ) {
                  hPullThJetBest->fill(pull[1][ifo]);
                  hPullPhJetBest->fill(pull[2][ifo]);
                }
+               hpull_jet1_E=pull[0][0];
+               hpull_jet2_E=pull[0][1];
+               hpull_jet3_E=pull[0][2];
+               hpull_jet4_E=pull[0][3];
+               hpull_jet1_th=pull[1][0];
+               hpull_jet2_th=pull[1][1];
+               hpull_jet3_th=pull[1][2];
+               hpull_jet4_th=pull[1][3];
+               hpull_jet1_phi=pull[2][0];
+               hpull_jet2_phi=pull[2][1];
+               hpull_jet3_phi=pull[2][2];
+               hpull_jet4_phi=pull[2][3];
              }
              else {
                message<WARNING>( log() << " ERROR CALCULATION FAILED for best permutation "
@@ -717,6 +753,8 @@ void ZH5CFit::processEvent( LCEvent * evt ) {
          hRecHMassNoFitBest->fill( beststartmassH ) ;
          hRecZMassNoFitBest->fill( beststartmassZ ) ;
          hPhotonEnergy->fill( _fitISR ? bestphotonenergy : 0. );
+         Hmass_before_fit=beststartmassH;
+         Hmass_after_fit=bestmassH;
        }
        // if none of the permutations converged, fill here startmass for permutation with smallest initial chi2!
        else {
@@ -731,7 +769,7 @@ void ZH5CFit::processEvent( LCEvent * evt ) {
        delete j3;
        delete j4;
 
-
+       ZHTree->Fill();
        evt->addCollection( OutputCol, _OutCol.c_str() );
 }//end if jetcol is not null
 
@@ -748,5 +786,6 @@ void ZH5CFit::check( LCEvent* ) {
 
 
 void ZH5CFit::end(){
-
+  _fout->Write(0);
+  _fout->Close();
 }

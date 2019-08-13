@@ -80,11 +80,16 @@ class ZH5CFit : public Processor {
   float chi2best;
   double Zmomentum[3]{}, Hmomentum[3]{}, ISRmomentum[3]{};
   float momentum[3]{}, energy{};
-
   int _nRun{}, _nEvt{}, nit{};
 
   int bestperm{}, errorflag{};
-
+  TTree *ZHTree{};
+  TFile* _fout = nullptr ;
+  float Hmass_before_fit{}, Hmass_after_fit{};
+  float hpull_jet1_E{}, hpull_jet2_E{}, hpull_jet3_E{}, hpull_jet4_E{};
+  float hpull_jet1_th{}, hpull_jet2_th{}, hpull_jet3_th{}, hpull_jet4_th{};
+  float hpull_jet1_phi{}, hpull_jet2_phi{}, hpull_jet3_phi{}, hpull_jet4_phi{};
+  std::string _outfile{};
 
   //output
   // TTree *outTree;
