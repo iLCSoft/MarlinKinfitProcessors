@@ -96,10 +96,10 @@ void DijetTester::processRunHeader( LCRunHeader* ) {
 void DijetTester::processEvent( LCEvent * evt ) { 
 
     
-    message<ERROR>( log() 
+  streamlog_out(ERROR) 
 		      << " processing event " << evt->getEventNumber() 
 		      << "  in run "          << evt->getRunNumber() 
-		      ) ;
+		      << std::endl ;
                       
   // this gets called for every event 
   // usually the working horse ...
@@ -338,7 +338,7 @@ void DijetTester::processEvent( LCEvent * evt ) {
    
   for (int ievt = 0; ievt < _ntoy; ievt++) { 
   
-     message<MESSAGE>( log()  << "start to process toy event number " << ievt ) ;
+    streamlog_out(MESSAGE)  << "start to process toy event number " << ievt << std::endl ;
      
      int debug = 0;
      if (ievt == _ievttrace || _traceall) debug = 4;
@@ -380,9 +380,9 @@ void DijetTester::processEvent( LCEvent * evt ) {
      double chi2 = fitter.getChi2();
      nit = fitter.getIterations();
 
-     message<DEBUG>( log() << "fit probability = " << prob ) ;  
-     message<DEBUG>( log() << "fit chi2 = " << chi2  ) ; 
-     message<DEBUG>( log() << "error code: " << ierr ) ;
+     streamlog_out(DEBUG ) << "fit probability = " << prob << std::endl ;  
+     streamlog_out(DEBUG ) << "fit chi2 = " << chi2 << std::endl ; 
+     streamlog_out(DEBUG ) << "error code: " << ierr << std::endl ;
                                   
      //bool usesigma_evt = true;
                   
@@ -398,36 +398,36 @@ void DijetTester::processEvent( LCEvent * evt ) {
        hEConstStop->fill (dijetevent->getEConstraint().getValue()); 
        hMConstStop->fill (dijetevent->getMassConstraint().getValue()); 
        
-       message<DEBUG>( log() << "looping over FOs " ) ;
+       streamlog_out(DEBUG) << "looping over FOs " << std::endl ;
        for (int ifo = 0; ifo < 2; ifo++){
-         message<DEBUG>( log() << "ifo =  " << ifo ) ;
+         streamlog_out(DEBUG) << "ifo =  " << ifo << std::endl ;
          double errfit, errmea, start, sigma; 
          double pull[3], pullmea[3], pulltrue[3];
          bool usesigma[3];
          for (int ipar = 0; ipar < 3; ipar++) {
-           message<DEBUG>( log() << "ipar =  " << ipar ) ;
+           streamlog_out(DEBUG) << "ipar =  " << ipar << std::endl ;
            errfit = dijetevent->getFittedFitObject(ifo)->getError(ipar);  // should make difference for NewtonFitter
            errmea = dijetevent->getStartFitObject(ifo)->getError(ipar);  // SmearedFO are not fitted: original errors
            start = dijetevent->getStartFitObject(ifo)->getParam(ipar);  // SmearedFO are not fitted: original values
            sigma = errmea*errmea-errfit*errfit;
-           message<DEBUG>( log() << " sigma =  " << sigma << " for ifo " << ifo 
-                                 << " in evt " << ievt << ", errmea =  " << errmea << ", errfit = " << errfit ) ;
+           streamlog_out(DEBUG) << " sigma =  " << sigma << " for ifo " << ifo 
+				<< " in evt " << ievt << ", errmea =  " << errmea << ", errfit = " << errfit << std::endl ;
            if (sigma > 0) {
              sigma = sqrt(sigma);
              usesigma[ipar] = true;
            }
            else {
-             message<WARNING>( log() << " SIGMA <= 0, taking only measured errors for pull for ifo = " << ifo 
-                                     << " in evt " << ievt << ", errmea =  " << errmea << ", errfit = " << errfit ) ;
+             streamlog_out(WARNING) << " SIGMA <= 0, taking only measured errors for pull for ifo = " << ifo 
+				    << " in evt " << ievt << ", errmea =  " << errmea << ", errfit = " << errfit << std::endl ;
              usesigma[ipar] = false;
              //usesigma_evt = false;
            }  
            pull[ipar] = (dijetevent->getFittedFitObject(ifo)->getParam(ipar) - start)/sigma;
            pullmea[ipar] = (dijetevent->getFittedFitObject(ifo)->getParam(ipar) - start)/errmea;
            pulltrue[ipar] = (start - dijetevent->getTrueFitObject(ifo)->getParam(ipar))/errmea;
-           message<DEBUG>( log() << " pull =  " << pull[ipar] << " for ifo " << ifo 
+           streamlog_out(DEBUG) << " pull =  " << pull[ipar] << " for ifo " << ifo 
                                  << " in evt " << ievt << ", pullmea =  " << pullmea[ipar] 
-                                 << ", delta = " << start - dijetevent->getFittedFitObject(ifo)->getParam(ipar) ) ;
+			       << ", delta = " << start - dijetevent->getFittedFitObject(ifo)->getParam(ipar) << std::endl ;
          }  
          if ( !_leptonic) {
            if (usesigma[0]) {hDistEJetOK->fill (dijetevent->getFittedFitObject(ifo)->getParam(0));  hPullEJetOK->fill (pull[0]); }
@@ -454,7 +454,7 @@ void DijetTester::processEvent( LCEvent * evt ) {
        }
      }
 #endif
-     if (ierr > 0) message<WARNING>( log() << "FIT ERROR = " << ierr << " in toy event " << ievt ) ;
+  if (ierr > 0) streamlog_out(WARNING) << "FIT ERROR = " << ierr << " in toy event " << ievt << std::endl ;
      
      //if (!usesigma_evt) break;
 

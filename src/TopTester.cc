@@ -101,10 +101,10 @@ void TopTester::processRunHeader( LCRunHeader* ) {
 void TopTester::processEvent( LCEvent * evt ) { 
 
     
-    message<ERROR>( log() 
+    streamlog_out(ERROR) 
 		      << " processing event " << evt->getEventNumber() 
 		      << "  in run "          << evt->getRunNumber() 
-		      ) ;
+		      << std::endl ;
                       
   // this gets called for every event 
   // usually the working horse ...
@@ -521,7 +521,7 @@ void TopTester::processEvent( LCEvent * evt ) {
    
   for (int ievt = 0; ievt < _ntoy; ievt++) { 
   
-     message<MESSAGE>( log()  << "start to process toy event number " << ievt ) ;
+     streamlog_out(MESSAGE)  << "start to process toy event number " << ievt << std::endl ;
      
      // double startmassW1 = 0., startmassW2 = 0.;
      double startmasstop1 = 0., startmasstop2 = 0.;
@@ -534,12 +534,12 @@ void TopTester::processEvent( LCEvent * evt ) {
        
      startmassW1 = topevent->getW1Mass();
      startmassW2 = topevent->getW2Mass();
-     message<MESSAGE>( log()  << "start mass of W 1: " << startmassW1 ) ;
-     message<MESSAGE>( log()  << "start mass of W 2: " << startmassW2 ) ;
+     streamlog_out(MESSAGE)  << "start mass of W 1: " << startmassW1 << std::endl ;
+     streamlog_out(MESSAGE)  << "start mass of W 2: " << startmassW2 << std::endl ;
      startmasstop1 = topevent->getTop1Mass();
      startmasstop2 = topevent->getTop2Mass();
-     message<MESSAGE>( log()  << "start mass of top 1: " << startmasstop1 ) ;
-     message<MESSAGE>( log()  << "start mass of top 2: " << startmasstop2 ) ;
+     streamlog_out(MESSAGE)  << "start mass of top 1: " << startmasstop1 << std::endl ;
+     streamlog_out(MESSAGE)  << "start mass of top 2: " << startmasstop2 << std::endl ;
                      
 #ifdef MARLIN_USE_AIDA
      hRecTop1MassNoFitAll->fill( startmasstop1 ) ;
@@ -583,18 +583,18 @@ void TopTester::processEvent( LCEvent * evt ) {
      int ierr = topevent->fitEvent(fitter);
   
      prob = fitter.getProbability();
-     if (prob < 0.002) message<WARNING>( log() << "fit probability = " << prob << " in TOY EVENT " << ievt ) ;  
+     if (prob < 0.002) streamlog_out(WARNING) << "fit probability = " << prob << " in TOY EVENT " << ievt << std::endl ;  
      double chi2 = fitter.getChi2();
      nit = fitter.getIterations();
 
-     message<MESSAGE>( log() << "fit probability = " << prob ) ;  
-     message<MESSAGE>( log() << "fit chi2 = " << chi2  ) ; 
-     message<MESSAGE>( log() << "error code: " << ierr ) ;
+     streamlog_out(MESSAGE) << "fit probability = " << prob << std::endl ;  
+     streamlog_out(MESSAGE) << "fit chi2 = " << chi2  << std::endl ; 
+     streamlog_out(MESSAGE) << "error code: " << ierr << std::endl ;
                                   
-     message<MESSAGE>( log()  << "final mass of W 1: " << topevent->getW1Mass() ) ;
-     message<MESSAGE>( log()  << "final mass of W 2: " << topevent->getW2Mass() ) ;
-     message<MESSAGE>( log()  << "final mass of top 1: " << topevent->getTop1Mass() ) ;
-     message<MESSAGE>( log()  << "final mass of top 2: " << topevent->getTop2Mass() ) ;
+     streamlog_out(MESSAGE)  << "final mass of W 1: " << topevent->getW1Mass() << std::endl ;
+     streamlog_out(MESSAGE)  << "final mass of W 2: " << topevent->getW2Mass() << std::endl ;
+     streamlog_out(MESSAGE)  << "final mass of top 1: " << topevent->getTop1Mass() << std::endl ;
+     streamlog_out(MESSAGE)  << "final mass of top 2: " << topevent->getTop2Mass() << std::endl ;
        
      //bool usesigma_evt = true;
                   
@@ -625,7 +625,7 @@ void TopTester::processEvent( LCEvent * evt ) {
        hMW2ConstStop->fill (topevent->getW2Constraint()->getValue()); 
        hMConstStop->fill (topevent->getTopConstraint()->getValue()); 
        
-       message<MESSAGE>( log() << "looping over FOs " ) ;
+       streamlog_out(MESSAGE) << "looping over FOs " << std::endl ;
        for (int ifo = 0; ifo < 6; ifo++){
          double errfit, errmea, sigma; 
          double truth, start, fitted;
@@ -645,24 +645,24 @@ void TopTester::processEvent( LCEvent * evt ) {
              sigma = errfit*errfit;     
            }  
            
-           message<MESSAGE>( log() << " sigma =  " << sigma << " for ifo " << ifo 
-                                   << " in evt " << ievt << ", errmea =  " << errmea << ", errfit = " << errfit ) ;
+           streamlog_out(MESSAGE) << " sigma =  " << sigma << " for ifo " << ifo 
+                                   << " in evt " << ievt << ", errmea =  " << errmea << ", errfit = " << errfit << std::endl ;
            if (sigma > 0) {
              sigma = sqrt(sigma);
              //usesigma[ipar] = true;
            }
            else {
-             message<WARNING>( log() << " SIGMA <= 0, taking only fitted errors for pull for ifo = " << ifo 
+             streamlog_out(WARNING) << " SIGMA <= 0, taking only fitted errors for pull for ifo = " << ifo 
                                      << " in evt " << ievt << ", errmea =  " << errmea << ", errfit = " << errfit
-                                     << " for ierr =  " << ierr ) ;
-             message<WARNING>( log() << "fit probability = " << prob ) ;  
-             message<WARNING>( log() << "fit chi2 = " << chi2  ) ; 
-             message<WARNING>( log() << "error code: " << ierr ) ;
+                                     << " for ierr =  " << ierr << std::endl ;
+             streamlog_out(WARNING) << "fit probability = " << prob << std::endl ;  
+             streamlog_out(WARNING) << "fit chi2 = " << chi2  << std::endl ; 
+             streamlog_out(WARNING) << "error code: " << ierr << std::endl ;
                                           
-             message<WARNING>( log()  << "final mass of W 1: " << topevent->getW1Mass() ) ;
-             message<WARNING>( log()  << "final mass of W 2: " << topevent->getW2Mass() ) ;
-             message<WARNING>( log()  << "final mass of top 1: " << topevent->getTop1Mass() ) ;
-             message<WARNING>( log()  << "final mass of top 2: " << topevent->getTop2Mass() ) ;
+             streamlog_out(WARNING)  << "final mass of W 1: " << topevent->getW1Mass() << std::endl ;
+             streamlog_out(WARNING)  << "final mass of W 2: " << topevent->getW2Mass() << std::endl ;
+             streamlog_out(WARNING)  << "final mass of top 1: " << topevent->getTop1Mass() << std::endl ;
+             streamlog_out(WARNING)  << "final mass of top 2: " << topevent->getTop2Mass() << std::endl ;
              sigma = errfit*errfit;
              //usesigma[ipar] = false;
              //usesigma_evt = false;
@@ -674,9 +674,9 @@ void TopTester::processEvent( LCEvent * evt ) {
            pull[ipar] = dist[ipar]/sigma;
            pulltrue[ipar] = disttrue[ipar]/errfit;
            pullsmear[ipar] = (start - truth)/errmea;
-           message<MESSAGE>( log() << " pull =  " << pull[ipar] << " for ifo " << ifo                                
+           streamlog_out(MESSAGE) << " pull =  " << pull[ipar] << " for ifo " << ifo                                
                                    << " in evt " << ievt << ", pulltrue =  " << pulltrue[ipar]                         
-                                   << ", delta = " << start - topevent->getFittedFitObject(ifo)->getParam(ipar) ) ;  
+                                   << ", delta = " << start - topevent->getFittedFitObject(ifo)->getParam(ipar) << std::endl ;  
                                    
          }  
          if ( !_semileptonic || ifo < 4 ) {
@@ -715,7 +715,7 @@ void TopTester::processEvent( LCEvent * evt ) {
        }
      }
 #endif
-     if (ierr > 0) message<WARNING>( log() << "FIT ERROR = " << ierr << " in toy event " << ievt ) ;
+     if (ierr > 0) streamlog_out(WARNING) << "FIT ERROR = " << ierr << " in toy event " << ievt << std::endl ;
      
      //if (!usesigma_evt) break;
 

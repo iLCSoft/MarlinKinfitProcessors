@@ -119,10 +119,10 @@ void WW5CFit::processRunHeader( LCRunHeader* ) {
 void WW5CFit::processEvent( LCEvent * evt ) { 
 
     
-    message<DEBUG>( log() 
+    streamlog_out(DEBUG) 
 		      << " processing event " << evt->getEventNumber() 
 		      << "  in run "          << evt->getRunNumber() 
-		      ) ;
+		      << std::endl ;
   // this gets called for every event 
   // usually the working horse ...
 
@@ -142,10 +142,10 @@ void WW5CFit::processEvent( LCEvent * evt ) {
   static AIDA::IHistogram1D* hJetMass ;    
   static AIDA::IHistogram1D* hFitError;    
              
-    message<DEBUG>( log() 
+    streamlog_out(DEBUG) 
 		      << " processing event " << evt->getEventNumber() 
 		      << "  in run "          << evt->getRunNumber() 
-		      ) ;
+		      << std::endl ;
   
   if( isFirstEvent() ) { 
     
@@ -197,10 +197,10 @@ void WW5CFit::processEvent( LCEvent * evt ) {
 
 #endif   
    
-  message<DEBUG>( log() 
+  streamlog_out(DEBUG) 
 		      << " processing event " << evt->getEventNumber() 
 		      << "  in run "          << evt->getRunNumber() 
-		      ) ;
+		      << std::endl ;
   
   
   HepLorentzVector lvec;
@@ -214,19 +214,19 @@ void WW5CFit::processEvent( LCEvent * evt ) {
      if (jetcol != 0) {
   
        int nJETS = jetcol->getNumberOfElements()  ;
-       message<DEBUG>( log() 
+       streamlog_out(DEBUG) 
                       << " found " << nJETS
                       << " jets in event " << evt->getEventNumber() 
                       << "  in run "          << evt->getRunNumber() 
-                      ) ;
+                      << std::endl ;
                       
        if (nJETS != 4) return;               
                    
        float yminus = jetcol ->parameters().getFloatVal( "YMinus");              
-       message<DEBUG>( log()  << " yminus = " << yminus ) ;
+       streamlog_out(DEBUG)  << " yminus = " << yminus << std::endl ;
                      
        float yplus = jetcol ->parameters().getFloatVal( "YPlus");              
-       message<DEBUG>( log()  << " yplus = " << yplus ) ;
+       streamlog_out(DEBUG)  << " yplus = " << yplus << std::endl ;
                             
   // original fit objects - save for next permutation
        JetFitObject* j1 = 0;
@@ -248,34 +248,34 @@ void WW5CFit::processEvent( LCEvent * evt ) {
                
           if (j) {
              jrps[i] = j;
-             message<DEBUG>( log() 
+             streamlog_out(DEBUG) 
                        << " found jet in event " << evt->getEventNumber() 
                        << "  in run "          << evt->getRunNumber() 
-                       ) ;
+                       << std::endl ;
              lvec = HepLorentzVector ((j->getMomentum())[0],(j->getMomentum())[1],(j->getMomentum())[2],j->getEnergy()); 
              if (i == 0) { 
                j1 = new JetFitObject (lvec.e(), lvec.theta(), lvec.phi(),
                   JetEnergyResolution(lvec.e()), errtheta, errphi, lvec.m());
                j1->setName("Jet1");
-               message<DEBUG>( log()  << " start four-vector of first  jet: " << *j1  ) ;
+               streamlog_out(DEBUG)  << " start four-vector of first  jet: " << *j1  << std::endl ;
 	     }
              else if (i == 1) { 
                j2 = new JetFitObject (lvec.e(), lvec.theta(), lvec.phi(),
                   JetEnergyResolution(lvec.e()), errtheta, errphi, lvec.m());
                j2->setName("Jet2");
-               message<DEBUG>( log() << " start four-vector of second  jet: " << *j2  ) ;
+               streamlog_out(DEBUG) << " start four-vector of second  jet: " << *j2  << std::endl ;
 	     }
              else if (i == 2) {
                j3 = new JetFitObject (lvec.e(), lvec.theta(), lvec.phi(),
                   JetEnergyResolution(lvec.e()), errtheta, errphi, lvec.m());
                j3->setName("Jet3");
-               message<DEBUG>( log() << " start four-vector of third  jet: " << *j3  ) ;
+               streamlog_out(DEBUG) << " start four-vector of third  jet: " << *j3  << std::endl ;
 	     }
              else if (i == 3) { 
                j4 = new JetFitObject (lvec.e(), lvec.theta(), lvec.phi(),
                   JetEnergyResolution(lvec.e()), errtheta, errphi, lvec.m());
                j4->setName("Jet4");
-               message<DEBUG>( log() << " start four-vector of forth  jet: " << *j4  ) ;
+               streamlog_out(DEBUG) << " start four-vector of forth  jet: " << *j4  << std::endl ;
 	     }
 #ifdef MARLIN_USE_AIDA
              hJetMass->fill(j->getMass());
@@ -325,18 +325,18 @@ void WW5CFit::processEvent( LCEvent * evt ) {
 #endif           
        
        const int NJETS = 4;
-       message<DEBUG>( log()  << "*j1" << *j1  << "*j2" << *j2  << "*j3" << *j3  << "*j4" << *j4  ) ;
+       streamlog_out(DEBUG)  << "*j1" << *j1  << "*j2" << *j2  << "*j3" << *j3  << "*j4" << *j4  << std::endl ;
        
        // these get changed by the fit -> reset after each permutation!
        JetFitObject fitjets[NJETS] = {*j1, *j2, *j3, *j4};
        for (int i = 0; i < NJETS; ++i)
-         message<DEBUG>( log()  << "fitjets[ " << i << "]: " << fitjets[i]  ) ;
+         streamlog_out(DEBUG)  << "fitjets[ " << i << "]: " << fitjets[i]  << std::endl ;
  
        // these point allways to the fitjets array, which gets reset.
        JetFitObject *jets[NJETS];
        for (int i = 0; i < NJETS; ++i) jets[i] = &fitjets[i];
        for (int i = 0; i < NJETS; ++i)
-         message<DEBUG>( log()  << "start four-vector of jets[ " << i << "]: " << *(jets[i])  ) ;
+         streamlog_out(DEBUG)  << "start four-vector of jets[ " << i << "]: " << *(jets[i])  << std::endl ;
 
        FourJetPairing pairing (jets);
        JetFitObject *permutedjets[NJETS];
@@ -350,12 +350,12 @@ void WW5CFit::processEvent( LCEvent * evt ) {
 
        for (int iperm = 0; iperm < pairing.getNPerm(); iperm++) {
 
-         message<DEBUG>( log() 
+         streamlog_out(DEBUG) 
                        << " ================================================= "  
-                       ) ;
-         message<DEBUG>( log() 
+                       << std::endl ;
+         streamlog_out(DEBUG) 
                        << " iperm = " << iperm 
-                       ) ;
+                       << std::endl ;
 
          // important: (re-)set fitjets array!
          fitjets[0] = *j1;
@@ -365,7 +365,7 @@ void WW5CFit::processEvent( LCEvent * evt ) {
 
          pairing.nextPermutation (permutedjets);
          for (int i = 0; i < NJETS; ++i)
-            message<DEBUG>( log()  << "start four-vector of jet " << i << ": " << *(permutedjets[i])  ) ;
+            streamlog_out(DEBUG)  << "start four-vector of jet " << i << ": " << *(permutedjets[i])  << std::endl ;
                               
          //MomentumConstraint pxc (1, 0);
          // crossing angle 14 mrad = 7/500
@@ -384,23 +384,23 @@ void WW5CFit::processEvent( LCEvent * evt ) {
          for (int i = 0; i < NJETS; ++i)
             pzc.addToFOList (*(permutedjets[i]));
         
-         message<DEBUG>( log() << "ECM = " << _ecm  ); 
+         streamlog_out(DEBUG) << "ECM = " << _ecm  << std::endl ; 
 	 MomentumConstraint ec(1, 0, 0, 0, _ecm);
          ec.setName("sum(E)");
          for (int i = 0; i < NJETS; ++i)
             ec.addToFOList (*(permutedjets[i]));
         
-            message<DEBUG>( log()  << "Value of pxc before fit: " << pxc.getValue() ) ;
-	    message<DEBUG>( log()  << "Value of pyc before fit: " << pyc.getValue() ) ;
-	    message<DEBUG>( log()  << "Value of pzc before fit: " << pzc.getValue() ) ;
-	    message<DEBUG>( log()  << "Value of ec before fit: " << ec.getValue() ) ;
+            streamlog_out(DEBUG)  << "Value of pxc before fit: " << pxc.getValue() << std::endl ;
+	    streamlog_out(DEBUG)  << "Value of pyc before fit: " << pyc.getValue() << std::endl ;
+	    streamlog_out(DEBUG)  << "Value of pzc before fit: " << pzc.getValue() << std::endl ;
+	    streamlog_out(DEBUG)  << "Value of ec before fit: " << ec.getValue() << std::endl ;
                       
 
          // ISR Photon initialized with missing p_z
          ISRPhotonFitObject *photon = new ISRPhotonFitObject (0., 0., -pzc.getValue(), b, ISRPzMaxB);
         
 	 if(_fitISR){
-            message<DEBUG>( log()  << "start four-vector of ISR photon: " << *(photon) ) ;
+            streamlog_out(DEBUG)  << "start four-vector of ISR photon: " << *(photon) << std::endl ;
                       
             pxc.addToFOList (*(photon));
             pyc.addToFOList (*(photon));
@@ -417,8 +417,8 @@ void WW5CFit::processEvent( LCEvent * evt ) {
          startmass1 = w.getMass(1);
          startmass2 = w.getMass(2);
          
-	 message<DEBUG>( log() << "start mass of W 1: " << startmass1 ) ;
-	 message<DEBUG>( log() << "start mass of W 2: " << startmass2 ) ;
+	 streamlog_out(DEBUG) << "start mass of W 1: " << startmass1 << std::endl ;
+	 streamlog_out(DEBUG) << "start mass of W 2: " << startmass2 << std::endl ;
                       
 #ifdef MARLIN_USE_AIDA
          hRecWMassNoFitAll->fill( 0.5*(startmass1 + startmass2) ) ;
@@ -457,19 +457,19 @@ void WW5CFit::processEvent( LCEvent * evt ) {
          double chi2 = fitter.getChi2();
          nit = fitter.getIterations();
 
-         message<DEBUG>( log() << "fit probability = " << prob ) ;  
-         message<DEBUG>( log() << "fit chi2 = " << chi2  ) ; 
-         message<DEBUG>( log() << "error code: " << fitter.getError() ) ;
+         streamlog_out(DEBUG) << "fit probability = " << prob << std::endl ;  
+         streamlog_out(DEBUG) << "fit chi2 = " << chi2  << std::endl ; 
+         streamlog_out(DEBUG) << "error code: " << fitter.getError() << std::endl ;
                       
          for (int i = 0; i < NJETS; ++i) {
-            message<DEBUG>( log()  << "final four-vector of jet " << i << ": " << *(permutedjets[i])) ;
+	   streamlog_out(DEBUG)  << "final four-vector of jet " << i << ": " << *(permutedjets[i]) << std::endl ;
 	 }
          if(_fitISR){
-            message<DEBUG>( log()  << "final four-vector of ISR photon: " << *(photon) ) ;
+            streamlog_out(DEBUG)  << "final four-vector of ISR photon: " << *(photon) << std::endl ;
 	 }
 
-         message<DEBUG>( log()  << "final mass of W 1: " << w.getMass(1) ) ;
-	 message<DEBUG>( log()  << "final mass of W 2: " << w.getMass(2) ) ;
+         streamlog_out(DEBUG)  << "final mass of W 1: " << w.getMass(1) << std::endl ;
+	 streamlog_out(DEBUG)  << "final mass of W 2: " << w.getMass(2) << std::endl ;
                       
          hFitError->fill( fitter.getError() ) ;
          if (fitter.getError() == 0) {
@@ -491,10 +491,10 @@ void WW5CFit::processEvent( LCEvent * evt ) {
            }
          }
          else {
-         message<DEBUG>( log() << "FIT ERROR = " << fitter.getError() << ", not filling histograms!"  ) ;
+         streamlog_out(DEBUG) << "FIT ERROR = " << fitter.getError() << ", not filling histograms!"  << std::endl ;
 	 }
          delete photon;
-         message<DEBUG>( log() << "end permutation ") ;
+         streamlog_out(DEBUG) << "end permutation " << std::endl ;
        }
 
 #ifdef MARLIN_USE_AIDA
