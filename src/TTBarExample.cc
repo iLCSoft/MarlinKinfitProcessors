@@ -80,10 +80,10 @@ void TTBarExample::processRunHeader( LCRunHeader* ) {
 void TTBarExample::processEvent( LCEvent * evt ) { 
 
     
-    message<MESSAGE>( log() 
+  streamlog_out(MESSAGE) 
 		      << " processing event " << evt->getEventNumber() 
 		      << "  in run "          << evt->getRunNumber() 
-		      ) ;
+		      << std::endl ;
   // this gets called for every event 
   // usually the working horse ...
 
@@ -97,10 +97,10 @@ void TTBarExample::processEvent( LCEvent * evt ) {
   static AIDA::IHistogram1D* hFitProbBest ;    
   static AIDA::IHistogram1D* hFitProbAll ;    
              
-    message<MESSAGE>( log() 
+  streamlog_out(MESSAGE) 
 		      << " processing event " << evt->getEventNumber() 
 		      << "  in run "          << evt->getRunNumber() 
-		      ) ;
+		      << std::endl ;
   
   if( isFirstEvent() ) { 
     
@@ -127,10 +127,10 @@ void TTBarExample::processEvent( LCEvent * evt ) {
 
 #endif
    
-  message<MESSAGE>( log() 
+  streamlog_out(MESSAGE) 
 		      << " processing event " << evt->getEventNumber() 
 		      << "  in run "          << evt->getRunNumber() 
-		      ) ;
+		      << std::endl ;
   
   
   HepLorentzVector lvec;
@@ -145,18 +145,18 @@ void TTBarExample::processEvent( LCEvent * evt ) {
      if (lightjetcol != 0 && bjetcol != 0) {
   
        int nlightJETS = lightjetcol->getNumberOfElements()  ;
-       message<MESSAGE>( log() 
+       streamlog_out(MESSAGE) 
                       << " found " << nlightJETS
                       << " light jets in event" << evt->getEventNumber() 
                       << "  in run "           << evt->getRunNumber() 
-                      ) ;
+                      << std::endl ;
                    
        int nbJETS = bjetcol->getNumberOfElements()  ;
-       message<MESSAGE>( log() 
+       streamlog_out(MESSAGE) 
                       << " found " << nbJETS
                       << " b jets in event" << evt->getEventNumber() 
                       << "  in run "           << evt->getRunNumber() 
-                      ) ;
+                      << std::endl ;
                    
        
   // original fit objects - save for next permutation
@@ -178,35 +178,35 @@ void TTBarExample::processEvent( LCEvent * evt ) {
           ReconstructedParticle* j = dynamic_cast<ReconstructedParticle*>( lightjetcol->getElementAt( i ) ) ;
                
           if (j) {
-             message<MESSAGE>( log() 
+             streamlog_out(MESSAGE) 
                        << " found jet in event " << evt->getEventNumber() 
                        << "  in run "          << evt->getRunNumber() 
-                       ) ;
+                       << std::endl ;
              lvec = HepLorentzVector ((j->getMomentum())[0],(j->getMomentum())[1],(j->getMomentum())[2],j->getEnergy()); 
              erre *= std::sqrt(lvec.e());
              if (i == 0) {
                j1 = new JetFitObject (lvec.e(), lvec.theta(), lvec.phi(), erre, errtheta, errphi);
-               message<MESSAGE>( log() 
+               streamlog_out(MESSAGE) 
                        << " start four-vector of first  jet: " << *j1 
-                       ) ;
+                       << std::endl ;
              }
              else if (i == 1) {
                j2 = new JetFitObject (lvec.e(), lvec.theta(), lvec.phi(), erre, errtheta, errphi);
-               message<MESSAGE>( log() 
+               streamlog_out(MESSAGE) 
                        << " start four-vector of second  jet: " << *j2 
-                       ) ;
+                       << std::endl ;
              }
              else if (i == 2) {
                j3 = new JetFitObject (lvec.e(), lvec.theta(), lvec.phi(), erre, errtheta, errphi);
-               message<MESSAGE>( log() 
+               streamlog_out(MESSAGE) 
                        << " start four-vector of third  jet: " << *j3 
-                       ) ;
+                       << std::endl ;
              }
              else if (i == 3) {
                j4 = new JetFitObject (lvec.e(), lvec.theta(), lvec.phi(), erre, errtheta, errphi);
-               message<MESSAGE>( log() 
+               streamlog_out(MESSAGE) 
                        << " start four-vector of forth  jet: " << *j4 
-                       ) ;
+                       << std::endl ;
              }
            
           }
@@ -217,23 +217,23 @@ void TTBarExample::processEvent( LCEvent * evt ) {
           ReconstructedParticle* j = dynamic_cast<ReconstructedParticle*>( bjetcol->getElementAt( i ) ) ;
                
           if (j) {
-             message<MESSAGE>( log() 
+             streamlog_out(MESSAGE) 
                        << " found b-jet in event " << evt->getEventNumber() 
                        << "  in run "          << evt->getRunNumber() 
-                       ) ;
+                       << std::endl ;
              lvec = HepLorentzVector ((j->getMomentum())[0],(j->getMomentum())[1],(j->getMomentum())[2],j->getEnergy()); 
              erre *= std::sqrt(lvec.e());
              if (i == 0) {
                j5 = new JetFitObject (lvec.e(), lvec.theta(), lvec.phi(), erre, errtheta, errphi);
-               message<MESSAGE>( log() 
+               streamlog_out(MESSAGE) 
                        << " start four-vector of first b-jet: " << *j5 
-                       ) ;
+                       << std::endl ;
              }
              else if (i == 1) {
                j6 = new JetFitObject (lvec.e(), lvec.theta(), lvec.phi(), erre, errtheta, errphi);
-               message<MESSAGE>( log() 
+               streamlog_out(MESSAGE) 
                        << " start four-vector of second b-jet: " << *j6 
-                       ) ;
+                       << std::endl ;
              }
            
           }
@@ -258,12 +258,12 @@ void TTBarExample::processEvent( LCEvent * evt ) {
  
        for (int iperm = 0; iperm < pairing.getNPerm(); iperm++) {
      
-         message<MESSAGE>( log() 
+         streamlog_out(MESSAGE) 
                        << " ================================================= "  
-                       ) ;
-         message<MESSAGE>( log() 
+                       << std::endl ;
+         streamlog_out(MESSAGE) 
                        << " iperm = " << iperm 
-                       ) ;
+                       << std::endl ;
 
          // important: (re-)set fitjets array!
          fitjets[0] = *j1;
@@ -275,9 +275,9 @@ void TTBarExample::processEvent( LCEvent * evt ) {
 
          pairing.nextPermutation (permutedjets);
          for (int i = 0; i < NJETS; ++i) {
-            message<MESSAGE>( log() 
+            streamlog_out(MESSAGE) 
                        << "start four-vector of jet " << i << ": " << *(permutedjets[i])
-                       ) ;
+                       << std::endl ;
          }              
         
          MomentumConstraint pxc (1, 0);
@@ -292,25 +292,25 @@ void TTBarExample::processEvent( LCEvent * evt ) {
          for (int i = 0; i < NJETS; ++i)
             pzc.addToFOList (*(permutedjets[i]));
             
-         message<MESSAGE>( log() 
+         streamlog_out(MESSAGE) 
                    << "ECM = " << _ecm
-                       ) ;
+                       << std::endl ;
          MomentumConstraint ec(0, 0, 0, 1, _ecm);
          for (int i = 0; i < NJETS; ++i)
             ec.addToFOList (*(permutedjets[i]));
         
-         message<MESSAGE>( log() 
+         streamlog_out(MESSAGE) 
                     << "Value of pxc before fit: " << pxc.getValue()
-                    ) ;
-         message<MESSAGE>( log() 
+                    << std::endl ;
+         streamlog_out(MESSAGE) 
                     << "Value of pyc before fit: " << pyc.getValue()
-                    ) ;
-         message<MESSAGE>( log() 
+                    << std::endl ;
+         streamlog_out(MESSAGE) 
                     << "Value of pzc before fit: " << pzc.getValue()
-                    ) ;
-         message<MESSAGE>( log() 
+                    << std::endl ;
+         streamlog_out(MESSAGE) 
                     << "Value of ec before fit: " << ec.getValue()
-                    ) ;
+                    << std::endl ;
   
          MassConstraint w1(80.4);
          MassConstraint w2(80.4);
@@ -319,12 +319,12 @@ void TTBarExample::processEvent( LCEvent * evt ) {
          w2.addToFOList (*(permutedjets[2]), 1);
          w2.addToFOList (*(permutedjets[3]), 1);
          
-         message<MESSAGE>( log() 
+         streamlog_out(MESSAGE) 
                        << "start mass of W 1: " << w1.getMass(1)
-                       ) ;
-         message<MESSAGE>( log() 
+                       << std::endl ;
+         streamlog_out(MESSAGE) 
                        << "start mass of W 2: " << w2.getMass(1)
-                       ) ;
+                       << std::endl ;
                        
          // this is just a cheap way to monitor the resulting top mass:
          MassConstraint t1(175.);
@@ -337,12 +337,12 @@ void TTBarExample::processEvent( LCEvent * evt ) {
          t2.addToFOList (*(permutedjets[5]), 1);
          startmass1 = t1.getMass(1);
          startmass2 = t2.getMass(1);
-         message<MESSAGE>( log() 
+         streamlog_out(MESSAGE) 
                        << "start mass of top 1: " << startmass1
-                       ) ;
-         message<MESSAGE>( log() 
+                       << std::endl ;
+         streamlog_out(MESSAGE) 
                        << "start mass of top 2: " << startmass2
-                       ) ;
+                       << std::endl ;
 #ifdef MARLIN_USE_AIDA
          hRecTopMassNoFitAll->fill( startmass1 ) ;
          hRecTopMassNoFitAll->fill( startmass2 ) ;
@@ -359,30 +359,30 @@ void TTBarExample::processEvent( LCEvent * evt ) {
          fitter.addConstraint (w2);
 
          double prob = fitter.fit();
-         message<MESSAGE>( log() 
+         streamlog_out(MESSAGE) 
                        << "fit probability = " << prob 
-                       ) ;
-         message<MESSAGE>( log() 
+                       << std::endl ;
+         streamlog_out(MESSAGE) 
                        << "error code: " << fitter.getError() 
-                       ) ;
+                       << std::endl ;
          for (int i = 0; i < NJETS; ++i) {
-            message<MESSAGE>( log() 
+            streamlog_out(MESSAGE) 
                        << "final four-vector of jet " << i << ": " << *(permutedjets[i])
-                       ) ;
+                       << std::endl ;
          }              
          
-         message<MESSAGE>( log() 
+         streamlog_out(MESSAGE) 
                        << "final mass of W 1: " << w1.getMass(1)
-                       ) ;
-         message<MESSAGE>( log() 
+                       << std::endl ;
+         streamlog_out(MESSAGE) 
                        << "final mass of W 2: " << w2.getMass(1)
-                       ) ;
-         message<MESSAGE>( log() 
+                       << std::endl ;
+         streamlog_out(MESSAGE) 
                        << "final mass of top 1: " << t1.getMass(1)
-                       ) ;
-         message<MESSAGE>( log() 
+                       << std::endl ;
+         streamlog_out(MESSAGE) 
                        << "final mass of top 2: " << t2.getMass(1)
-                       ) ;
+                       << std::endl ;
          if (fitter.getError() == 0) {
 #ifdef MARLIN_USE_AIDA
            hFitProbAll->fill( prob ) ;
@@ -398,9 +398,9 @@ void TTBarExample::processEvent( LCEvent * evt ) {
            }
          }
          else {
-         message<MESSAGE>( log() 
+         streamlog_out(MESSAGE) 
                        << "FIT ERROR = " << fitter.getError() << ", not filling histograms!"
-                       ) ;
+                       << std::endl ;
          }
 
        }

@@ -272,10 +272,10 @@ void ZH5CFit::SetZero()
 void ZH5CFit::processEvent( LCEvent * evt ) { //event start
 
 
-    message<MESSAGE>( log()
+    streamlog_out(MESSAGE)
 		      << " processing event " << evt->getEventNumber()
 		      << "  in run "          << evt->getRunNumber()
-		      ) ;
+		      << std::endl ;
   // this gets called for every event
   // usually the working horse ...
 
@@ -408,19 +408,19 @@ void ZH5CFit::processEvent( LCEvent * evt ) { //event start
      if (jetcol != 0) {//jetcol is not null
 
        int nJETS = jetcol->getNumberOfElements()  ;
-       message<MESSAGE>( log()
+       streamlog_out(MESSAGE)
                       << " found " << nJETS
                       << " jets in event " << evt->getEventNumber()
                       << "  in run "          << evt->getRunNumber()
-                      ) ;
+                      << std::endl ;
 
        if (nJETS != 4) return;
 
        float yminus = jetcol ->parameters().getFloatVal( "YMinus");
-       message<MESSAGE>( log()  << " yminus = " << yminus ) ;
+       streamlog_out(MESSAGE)  << " yminus = " << yminus << std::endl ;
 
        float yplus = jetcol ->parameters().getFloatVal( "YPlus");
-       message<MESSAGE>( log()  << " yplus = " << yplus ) ;
+       streamlog_out(MESSAGE)  << " yplus = " << yplus << std::endl ;
 
 
 
@@ -599,16 +599,16 @@ void ZH5CFit::processEvent( LCEvent * evt ) { //event start
     ReconstructedParticle* jrps[4];
     for(int nuenesign=0; nuenesign<2; nuenesign++){//neutrino correction + and - loop
 
-      message<MESSAGE>( log()  << "nuenesign: " << nuenesign ) ;
+      streamlog_out(MESSAGE)  << "nuenesign: " << nuenesign << std::endl ;
        for(int i=0; i< nJETS ; i++){//loop over nJets
 
           ReconstructedParticle* j = dynamic_cast<ReconstructedParticle*>( jetcol->getElementAt( i ) ) ;
           if (j) {
              jrps[i] = j;
-             message<MESSAGE>( log()
+             streamlog_out(MESSAGE)
                        << " found jet in event " << evt->getEventNumber()
                        << "  in run "          << evt->getRunNumber()
-                       ) ;
+                       << std::endl ;
              Px=j->getMomentum()[0];
              Px2=std::pow(Px,2);
              Py=j->getMomentum()[1];
@@ -669,7 +669,7 @@ void ZH5CFit::processEvent( LCEvent * evt ) { //event start
                  correction++;
                  NuEnergy[0]=ENuplus;
                  NuEnergy[1]=ENuminus;
-                 message<DEBUG>( log()  << " added neutrino energy to the best-jet "<< NuEnergy[nuenesign]) ;
+                 streamlog_out(DEBUG)  << " added neutrino energy to the best-jet "<< NuEnergy[nuenesign] << std::endl ;
                }
              }
 
@@ -678,25 +678,25 @@ void ZH5CFit::processEvent( LCEvent * evt ) { //event start
                  j1 = new JetFitObject (lvec.e()+NuEnergy[nuenesign], lvec.theta(), lvec.phi(),
                     JetResE*sigmaScaleFactor, JetResTheta, JetResPhi, lvec.m());
                  j1->setName("Jet1");
-                 message<DEBUG>( log()  << " start four-vector of first  jet: " << *j1  ) ;
+                 streamlog_out(DEBUG)  << " start four-vector of first  jet: " << *j1  << std::endl ;
                 }
                else if (i == 1) {
                  j2 = new JetFitObject (lvec.e()+NuEnergy[nuenesign], lvec.theta(), lvec.phi(),
                     JetResE*sigmaScaleFactor, JetResTheta, JetResPhi, lvec.m());
                  j2->setName("Jet2");
-                 message<DEBUG>( log() << " start four-vector of second  jet: " << *j2  ) ;
+                 streamlog_out(DEBUG) << " start four-vector of second  jet: " << *j2  << std::endl ;
                 }
                else if (i == 2) {
                  j3 = new JetFitObject (lvec.e()+NuEnergy[nuenesign], lvec.theta(), lvec.phi(),
                     JetResE*sigmaScaleFactor, JetResTheta, JetResPhi, lvec.m());
                  j3->setName("Jet3");
-                 message<DEBUG>( log() << " start four-vector of third  jet: " << *j3  ) ;
+                 streamlog_out(DEBUG) << " start four-vector of third  jet: " << *j3  << std::endl ;
                 }
                else if (i == 3) {
                  j4 = new JetFitObject (lvec.e()+NuEnergy[nuenesign], lvec.theta(), lvec.phi(),
                     JetResE*sigmaScaleFactor, JetResTheta, JetResPhi, lvec.m());
                  j4->setName("Jet4");
-                   message<DEBUG>( log() << " start four-vector of forth  jet: " << *j4  ) ;
+                   streamlog_out(DEBUG) << " start four-vector of forth  jet: " << *j4  << std::endl ;
                 }
              }
              else{
@@ -704,25 +704,25 @@ void ZH5CFit::processEvent( LCEvent * evt ) { //event start
                  j1 = new JetFitObject (lvec.e()+NuEnergy[nuenesign], lvec.theta(), lvec.phi(),
                     JetEnergyResolution(lvec.e()), _errtheta, _errphi, lvec.m());
                  j1->setName("Jet1");
-                 message<DEBUG>( log()  << " start four-vector of first  jet: " << *j1  ) ;
+                 streamlog_out(DEBUG)  << " start four-vector of first  jet: " << *j1  << std::endl ;
                 }
                else if (i == 1) {
                  j2 = new JetFitObject (lvec.e()+NuEnergy[nuenesign], lvec.theta(), lvec.phi(),
                     JetEnergyResolution(lvec.e()), _errtheta, _errphi, lvec.m());
                  j2->setName("Jet2");
-                 message<DEBUG>( log() << " start four-vector of second  jet: " << *j2  ) ;
+                 streamlog_out(DEBUG) << " start four-vector of second  jet: " << *j2  << std::endl ;
                 }
                else if (i == 2) {
                  j3 = new JetFitObject (lvec.e()+NuEnergy[nuenesign], lvec.theta(), lvec.phi(),
                     JetEnergyResolution(lvec.e()), _errtheta, _errphi, lvec.m());
                  j3->setName("Jet3");
-                 message<DEBUG>( log() << " start four-vector of third  jet: " << *j3  ) ;
+                 streamlog_out(DEBUG) << " start four-vector of third  jet: " << *j3  << std::endl ;
                 }
                else if (i == 3) {
                  j4 = new JetFitObject (lvec.e()+NuEnergy[nuenesign], lvec.theta(), lvec.phi(),
                     JetEnergyResolution(lvec.e()), _errtheta, _errphi, lvec.m());
                  j4->setName("Jet4");
-                   message<DEBUG>( log() << " start four-vector of forth  jet: " << *j4  ) ;
+                   streamlog_out(DEBUG) << " start four-vector of forth  jet: " << *j4  << std::endl ;
                 }
              }
 
@@ -776,35 +776,35 @@ void ZH5CFit::processEvent( LCEvent * evt ) { //event start
     #endif
 
            const int NJETS = 4;
-           message<MESSAGE>( log()  << "*j1" << *j1  << "*j2" << *j2  << "*j3" << *j3  << "*j4" << *j4  ) ;
+           streamlog_out(MESSAGE)  << "*j1" << *j1  << "*j2" << *j2  << "*j3" << *j3  << "*j4" << *j4  << std::endl ;
 
            // these don't get changed by the fit -> to obtain start values later!
            JetFitObject startjets[NJETS] = {*j1, *j2, *j3, *j4};
            for (int i = 0; i < NJETS; ++i)
-             message<MESSAGE>( log()  << "startjets[ " << i << "]: " << startjets[i]  ) ;
+             streamlog_out(MESSAGE)  << "startjets[ " << i << "]: " << startjets[i]  << std::endl ;
 
            // these get changed by the fit -> reset after each permutation!
            JetFitObject fitjets[NJETS] = {*j1, *j2, *j3, *j4};
            for (int i = 0; i < NJETS; ++i)
-             message<MESSAGE>( log()  << "fitjets[ " << i << "]: " << fitjets[i]  ) ;
+             streamlog_out(MESSAGE)  << "fitjets[ " << i << "]: " << fitjets[i]  << std::endl ;
 
            // these point allways to the fitjets array, which gets reset.
            JetFitObject *jets[NJETS];
            for (int i = 0; i < NJETS; ++i) jets[i] = &fitjets[i];
            for (int i = 0; i < NJETS; ++i)
-             message<MESSAGE>( log()  << "start four-vector of jets[ " << i << "]: " << *(jets[i])  ) ;
+             streamlog_out(MESSAGE)  << "start four-vector of jets[ " << i << "]: " << *(jets[i])  << std::endl ;
 
            FourJetZHPairing pairing (jets);
            JetFitObject *permutedjets[NJETS];
 
            for (int iperm = 0; iperm < pairing.getNPerm(); iperm++) { //permutation begins
 
-             message<MESSAGE>( log()
+             streamlog_out(MESSAGE)
                            << " ================================================= "
-                           ) ;
-             message<MESSAGE>( log()
+                           << std::endl ;
+             streamlog_out(MESSAGE)
                            << " iperm = " << iperm
-                           ) ;
+                           << std::endl ;
 
              // important: (re-)set fitjets array!
              fitjets[0] = *j1;
@@ -814,7 +814,7 @@ void ZH5CFit::processEvent( LCEvent * evt ) { //event start
 
              pairing.nextPermutation (permutedjets);
              for (int i = 0; i < NJETS; ++i)
-                message<MESSAGE>( log()  << "start four-vector of jet " << i << ": " << *(permutedjets[i])  ) ;
+                streamlog_out(MESSAGE)  << "start four-vector of jet " << i << ": " << *(permutedjets[i])  << std::endl ;
 
              //MomentumConstraint pxc (1, 0);
              // crossing angle 14 mrad = 7/500
@@ -841,10 +841,10 @@ void ZH5CFit::processEvent( LCEvent * evt ) { //event start
             for (int i = 0; i < NJETS; ++i)
             ec.addToFOList (*(permutedjets[i]));
 
-                message<MESSAGE>( log()  << "Value of pxc before fit: " << pxc.getValue() ) ;
-    	    message<MESSAGE>( log()  << "Value of pyc before fit: " << pyc.getValue() ) ;
-    	    message<MESSAGE>( log()  << "Value of pzc before fit: " << pzc.getValue() ) ;
-    	    message<MESSAGE>( log()  << "Value of ec before fit: " << ec.getValue() ) ;
+                streamlog_out(MESSAGE)  << "Value of pxc before fit: " << pxc.getValue() << std::endl ;
+    	    streamlog_out(MESSAGE)  << "Value of pyc before fit: " << pyc.getValue() << std::endl ;
+    	    streamlog_out(MESSAGE)  << "Value of pzc before fit: " << pzc.getValue() << std::endl ;
+    	    streamlog_out(MESSAGE)  << "Value of ec before fit: " << ec.getValue() << std::endl ;
 
 
              // ISR Photon initialized with missing p_z
@@ -853,7 +853,7 @@ void ZH5CFit::processEvent( LCEvent * evt ) { //event start
                                                                                     //double b_, double PzMaxB_, double PzMinB_ = 0.);
 
     	 if(_fitISR){
-                message<MESSAGE>( log()  << "start four-vector of ISR photon: " << *(photon) ) ;
+                streamlog_out(MESSAGE)  << "start four-vector of ISR photon: " << *(photon) << std::endl ;
 
                 pxc.addToFOList (*(photon));
                 pyc.addToFOList (*(photon));
@@ -869,41 +869,41 @@ void ZH5CFit::processEvent( LCEvent * evt ) { //event start
              MassConstraint h(125.);
              h.addToFOList (*(permutedjets[2]), 1);
              h.addToFOList (*(permutedjets[3]), 1);
-             message<MESSAGE>( log()  << "final mass of Z: " << z.getMass(1) ) ;
+             streamlog_out(MESSAGE)  << "final mass of Z: " << z.getMass(1) << std::endl ;
 
              startmassZ = z.getMass(1);
              startmassH = h.getMass(1);
 
-    	 message<MESSAGE>( log() << "start mass of Z: " << startmassZ ) ;
-    	 message<MESSAGE>( log() << "start mass of H: " << startmassH ) ;
+    	 streamlog_out(MESSAGE) << "start mass of Z: " << startmassZ << std::endl ;
+    	 streamlog_out(MESSAGE) << "start mass of H: " << startmassH << std::endl ;
 
               Hmass_NoFit=startmassH;
 
-	      message<DEBUG4>( log() << "before AIDA"  ) ;
+	      streamlog_out(DEBUG4) << "before AIDA"  << std::endl ;
     #ifdef MARLIN_USE_AIDA
              hRecHMassNoFitAll->fill( startmassH ) ;
              //hRecHMassNoFitAll->fill( startmassH ) ;
     #endif
 
-	      message<DEBUG4>( log() << "after AIDA"  ) ;
+	      streamlog_out(DEBUG4) << "after AIDA"  << std::endl ;
              BaseFitter *pfitter;
              if (_ifitter == 1) {
                pfitter = new NewFitterGSL();
                if (evt->getEventNumber()== _ievttrace || _traceall) (dynamic_cast<NewFitterGSL*>(pfitter))->setDebug (debug);
 
-	      message<DEBUG4>( log() << "ifitter is 1"  ) ;
+	      streamlog_out(DEBUG4) << "ifitter is 1"  << std::endl ;
              }
              else if (_ifitter == 2) {
                pfitter = new NewtonFitterGSL();
                if (evt->getEventNumber()== _ievttrace || _traceall) (dynamic_cast<NewtonFitterGSL*>(pfitter))->setDebug (debug);
 
-	      message<DEBUG4>( log() << "ifitter is 2"  ) ;
+	      streamlog_out(DEBUG4) << "ifitter is 2"  << std::endl ;
              }
              else {
                // OPALFitter has no method setDebug !
                pfitter = new OPALFitterGSL();
 
-	      message<DEBUG4>( log() << "ifitter is not 1 or 2"  ) ;
+	      streamlog_out(DEBUG4) << "ifitter is not 1 or 2"  << std::endl ;
                if (evt->getEventNumber()== _ievttrace || _traceall) (dynamic_cast<OPALFitterGSL*>(pfitter))->setDebug (debug);
              }
              BaseFitter &fitter = *pfitter;
@@ -915,7 +915,7 @@ void ZH5CFit::processEvent( LCEvent * evt ) { //event start
                 fitter.addFitObject (*(permutedjets[i]));
              if(_fitISR){
 
-	      message<DEBUG4>( log() << "isr added to fit"  ) ;
+	      streamlog_out(DEBUG4) << "isr added to fit"  << std::endl ;
                 fitter.addFitObject (*(photon));
              }
              fitter.addConstraint (pxc);
@@ -924,7 +924,7 @@ void ZH5CFit::processEvent( LCEvent * evt ) { //event start
              fitter.addConstraint (ec);
              fitter.addConstraint (z);
 
-	      message<DEBUG4>( log() << "constraints added"  ) ;
+	      streamlog_out(DEBUG4) << "constraints added"  << std::endl ;
              // don't constrain Higgs mass, just use constraints for convenient mass calculation
              //fitter.addConstraint (h);\
 
@@ -934,7 +934,7 @@ void ZH5CFit::processEvent( LCEvent * evt ) { //event start
                chi2startmassH = startmassH;
                bestzvalue = fabs(startmassZ-91.2) + fabs(startmassH-125.);
 
-	      message<DEBUG4>( log() << "best z value is this..." <<  bestzvalue ) ;
+	      streamlog_out(DEBUG4) << "best z value is this..." <<  bestzvalue << std::endl ;
              }
 
 
@@ -942,16 +942,16 @@ void ZH5CFit::processEvent( LCEvent * evt ) { //event start
              double chi2 = fitter.getChi2();
              nit = fitter.getIterations();
 
-             message<DEBUG4>( log() << "fit probability = " << prob ) ;
-             message<DEBUG4>( log() << "fit chi2 = " << chi2  ) ;
-             message<DEBUG4>( log() << "error code: " << fitter.getError() ) ;
+             streamlog_out(DEBUG4) << "fit probability = " << prob << std::endl ;
+             streamlog_out(DEBUG4) << "fit chi2 = " << chi2  << std::endl ;
+             streamlog_out(DEBUG4) << "error code: " << fitter.getError() << std::endl ;
 
              for (int i = 0; i < NJETS; ++i) {
-                message<MESSAGE>( log()  << "final four-vector of jet " << i << ": " << *(permutedjets[i])) ;
-                message<MESSAGE>( log()  << "final px of jet " << i << ": " << (permutedjets[i])) ;
+                streamlog_out(MESSAGE)  << "final four-vector of jet " << i << ": " << *(permutedjets[i]) << std::endl ;
+                streamlog_out(MESSAGE)  << "final px of jet " << i << ": " << (permutedjets[i]) << std::endl ;
     	 }
              if(_fitISR){
-                message<MESSAGE>( log()  << "final four-vector of ISR photon: " << *(photon) ) ;
+                streamlog_out(MESSAGE)  << "final four-vector of ISR photon: " << *(photon) << std::endl ;
     	 }
 
 
@@ -994,7 +994,7 @@ void ZH5CFit::processEvent( LCEvent * evt ) { //event start
     //           if (prob > bestprob && h.getMass(1) > 70 && w.getMass(1) < 150) {
                if (prob > bestprob) {
                  bestprob = prob;
-                 message<DEBUG>( log()  << "BESTPROB: " << bestprob ) ;
+                 streamlog_out(DEBUG)  << "BESTPROB: " << bestprob << std::endl ;
                  bestnit  = nit;
                  bestmassZ = z.getMass(1);
                  bestmassH = h.getMass(1);
@@ -1034,9 +1034,9 @@ void ZH5CFit::processEvent( LCEvent * evt ) { //event start
                    hpull_jet4_phi=pull[2][3];
                  }//end if  fitter.getError() is = 0
                  else {//if  fitter.getError() is not = 0
-                   message<DEBUG>( log() << " ERROR CALCULATION FAILED for best permutation "
+                   streamlog_out(DEBUG) << " ERROR CALCULATION FAILED for best permutation "
                                        << " in event " << evt->getEventNumber()
-                                       << " for permutation " << iperm ) ;
+                                       << " for permutation " << iperm << std::endl ;
                    for (int ifo = 0; ifo < 4; ifo++){
                      hPullEJetBest->fill (-6.);
                      hPullThJetBest->fill(-6.);
@@ -1046,18 +1046,18 @@ void ZH5CFit::processEvent( LCEvent * evt ) { //event start
                }
              }//end-if fitter.getError() <=0
              else {
-                message<DEBUG4>( log() << "FIT ERROR = " << fitter.getError()
+                streamlog_out(DEBUG4) << "FIT ERROR = " << fitter.getError()
                                        << " in event " << evt->getEventNumber()
                                        << " for permutation " << iperm
-                                       << ", not filling histograms!"  ) ;
-                                       message<MESSAGE>( log()  << "start mass of Z: " << startmassZ) ;
-    	          message<DEBUG4>( log()  << "start mass of H: " << startmassH ) ;
-                message<DEBUG4>( log()  << "final mass of Z: " << z.getMass(1) ) ;
-    	          message<DEBUG4>( log()  << "final mass of H: " << h.getMass(1) ) ;
+                                       << ", not filling histograms!"  << std::endl ;
+                                       streamlog_out(MESSAGE)  << "start mass of Z: " << startmassZ << std::endl ;
+    	          streamlog_out(DEBUG4)  << "start mass of H: " << startmassH << std::endl ;
+                streamlog_out(DEBUG4)  << "final mass of Z: " << z.getMass(1) << std::endl ;
+    	          streamlog_out(DEBUG4)  << "final mass of H: " << h.getMass(1) << std::endl ;
 
     	         }
              delete photon;
-             message<DEBUG4>( log() << "end permutation") ;
+             streamlog_out(DEBUG4) << "end permutation" << std::endl ;
            }//permutation ends
       }//neutrino correction + and - loop
 
@@ -1069,62 +1069,62 @@ void ZH5CFit::processEvent( LCEvent * evt ) { //event start
       ReconstructedParticleImpl* Hfitrec = new ReconstructedParticleImpl;
       ISRfitrec->setMomentum(ISRmomentum);
       ISRfitrec->setEnergy(bestphotonenergy);
-      message<DEBUG>( log() << " Energy ISR:   "
-                         << ISRfitrec->getEnergy()) ;
+      streamlog_out(DEBUG) << " Energy ISR:   "
+                         << ISRfitrec->getEnergy() << std::endl ;
       ISRfitrec->setType (22);
-      message<DEBUG>( log() << " IS ISR:   "
-                         << ISRfitrec->getType()) ;
+      streamlog_out(DEBUG) << " IS ISR:   "
+                         << ISRfitrec->getType() << std::endl ;
       OutputCol->addElement(ISRfitrec);
 
 
       Zfitrec->setMomentum(Zmomentum);
-      message<DEBUG>( log() << "  Zmomentum :   "
-                         << Zfitrec->getMomentum()[0] << "," << Zfitrec->getMomentum()[1]<<","<< Zfitrec->getMomentum()[2]);
+      streamlog_out(DEBUG) << "  Zmomentum :   "
+			   << Zfitrec->getMomentum()[0] << "," << Zfitrec->getMomentum()[1]<<","<< Zfitrec->getMomentum()[2] << std::endl ;
 
       Zfitrec->setEnergy(Z_Energy);
-      message<DEBUG>( log() << " Energy Z:   "
-                         << Zfitrec->getEnergy()) ;
+      streamlog_out(DEBUG) << " Energy Z:   "
+                         << Zfitrec->getEnergy() << std::endl ;
       Zfitrec->setMass(bestmassZ);
-      message<DEBUG>( log() << " Mass Z:   "
-                         << Zfitrec->getMass()) ;
+      streamlog_out(DEBUG) << " Mass Z:   "
+                         << Zfitrec->getMass() << std::endl ;
       Zfitrec->setType (23);
-      message<DEBUG>( log() << " IS Z :   "
-                         << Zfitrec->getType()) ;
+      streamlog_out(DEBUG) << " IS Z :   "
+                         << Zfitrec->getType() << std::endl ;
       OutputCol->addElement(Zfitrec);
 
 
       Hfitrec->setMomentum(Hmomentum);
       Hfitrec->setEnergy(H_Energy);
-      message<DEBUG>( log() << " Energy H:   "
-                         << Hfitrec->getEnergy()) ;
+      streamlog_out(DEBUG) << " Energy H:   "
+                         << Hfitrec->getEnergy() << std::endl ;
       Hfitrec->setMass(bestmassH);
-      message<DEBUG>( log() << " Mass H:   "
-                         << Hfitrec->getMass()) ;
+      streamlog_out(DEBUG) << " Mass H:   "
+                         << Hfitrec->getMass() << std::endl ;
       Hfitrec->setType (25);
-      message<DEBUG>( log() << " IS H:   "
-                         << Hfitrec->getType()) ;
+      streamlog_out(DEBUG) << " IS H:   "
+                         << Hfitrec->getType() << std::endl ;
       OutputCol->addElement(Hfitrec);
 
 
-	    OutputCol->parameters().setValue("bestchisq", (float)chi2best);
-      message<DEBUG>( log() << " chi2:   " << chi2best );
+      OutputCol->parameters().setValue("bestchisq", (float)chi2best);
+      streamlog_out(DEBUG) << " chi2:   " << chi2best << std::endl ;
       OutputCol->parameters().setValue("best_prob", (float)bestprob);
-      message<DEBUG>( log() << " prob:   " << bestprob );
+      streamlog_out(DEBUG) << " prob:   " << bestprob << std::endl ;
       OutputCol->parameters().setValue("error_code", (float)errorcode);
-      message<DEBUG>( log() << "Error Code:   " << errorcode );
+      streamlog_out(DEBUG) << "Error Code:   " << errorcode << std::endl ;
 
       Hmass_before_fit=beststartmassH;
       Hmass_after_fit=bestmassH;
       Error_code=errorcode;
 
-       message<DEBUG>( log() << "==============  end of permutations for event " << evt->getEventNumber() <<  " ==============" ) ;
-       message<DEBUG>( log()  << "min chi2 start mass of Z: " << chi2startmassZ ) ;
-       message<DEBUG>( log()  << "min chi2 start mass of H: " << chi2startmassH ) ;
-       message<DEBUG>( log()  << "best start mass of Z: " << beststartmassZ ) ;
-       message<DEBUG>( log()  << "best start mass of H: " << beststartmassH ) ;
-       message<DEBUG>( log()  << "best mass of Z: " << bestmassZ ) ;
-       message<DEBUG>( log()  << "best mass of H: " << bestmassH ) ;
-       message<DEBUG>( log()  << "Error Code: " << errorcode ) ;
+       streamlog_out(DEBUG) << "==============  end of permutations for event " << evt->getEventNumber() <<  " ==============" << std::endl ;
+       streamlog_out(DEBUG)  << "min chi2 start mass of Z: " << chi2startmassZ << std::endl ;
+       streamlog_out(DEBUG)  << "min chi2 start mass of H: " << chi2startmassH << std::endl ;
+       streamlog_out(DEBUG)  << "best start mass of Z: " << beststartmassZ << std::endl ;
+       streamlog_out(DEBUG)  << "best start mass of H: " << beststartmassH << std::endl ;
+       streamlog_out(DEBUG)  << "best mass of Z: " << bestmassZ << std::endl ;
+       streamlog_out(DEBUG)  << "best mass of H: " << bestmassH << std::endl ;
+       streamlog_out(DEBUG)  << "Error Code: " << errorcode << std::endl ;
 
 
 #ifdef MARLIN_USE_AIDA
@@ -1143,7 +1143,7 @@ void ZH5CFit::processEvent( LCEvent * evt ) { //event start
          hRecZMassNoFitFail->fill( chi2startmassZ ) ;
        }
 #endif
-       //message<MESSAGE>( log()  << "final mass of Z: " << z.getMass(1) ) ;
+       //streamlog_out(MESSAGE)  << "final mass of Z: " << z.getMass(1) << std::endl ;
 
        delete j1;
        delete j2;

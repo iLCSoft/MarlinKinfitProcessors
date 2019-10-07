@@ -53,21 +53,21 @@ SimpleVertexProcessor::SimpleVertexProcessor() : Processor("SimpleVertexProcesso
 
 
 void SimpleVertexProcessor::init() {
-  message<MESSAGE>( log()  << "hello from SimpleVertexProcessor::init");
+  streamlog_out(MESSAGE)  << "hello from SimpleVertexProcessor::init" << std::endl ;
   printParameters() ;
   return;
 }
 
 void SimpleVertexProcessor::processRunHeader( LCRunHeader* ) {
-  message<MESSAGE>( log()  << "hello from SimpleVertexProcessor::processRunHeader");
+  streamlog_out(MESSAGE)  << "hello from SimpleVertexProcessor::processRunHeader" << std::endl ;
 }
 
 void SimpleVertexProcessor::processEvent( LCEvent * evt ) {
 
-   message<MESSAGE>( log() 
+  streamlog_out(MESSAGE) 
 		      << " processing event " << evt->getEventNumber() 
 		      << "  in run "          << evt->getRunNumber() 
-		      ) ;
+		      << std::endl ;
                       
 #ifdef MARLIN_USE_AIDA
   static AIDA::IHistogram1D* hFitProb;
@@ -128,7 +128,7 @@ void SimpleVertexProcessor::processEvent( LCEvent * evt ) {
         if ( ts[i] ) {
           tfo[i] = new TrackParticleFitObject(ts[i], mass_pi);
         } else {
-          message<WARNING>( log()  << "no track state found @ first hit, using default track parameters" );
+          streamlog_out(WARNING)  << "no track state found @ first hit, using default track parameters" << std::endl ;
           tfo[i] = new TrackParticleFitObject(trk[i], mass_pi);
         }
       }
@@ -172,7 +172,7 @@ void SimpleVertexProcessor::processEvent( LCEvent * evt ) {
       int    dof =   _opalFit->getDoF();
       int    nit =   _opalFit->getIterations();
       
-      message<MESSAGE>( log() << "done : ierr " << ierr << " fitProb " << fprob << " chisq " << chi2 << " nDOF " << dof << " nIter " << nit );
+      streamlog_out(MESSAGE) << "done : ierr " << ierr << " fitProb " << fprob << " chisq " << chi2 << " nDOF " << dof << " nIter " << nit << std::endl ;
 
       hFitError->fill( ierr ) ;
       if (ierr == 0) {
@@ -182,14 +182,14 @@ void SimpleVertexProcessor::processEvent( LCEvent * evt ) {
 // Vertex FO error matrix
         for (unsigned int i=0; i<3; i++){
           for (unsigned int j=i; j<3; j++){
-               message<MESSAGE>( log() << "Cov " << i << " " << j << " " << vertexFO->getCov(i,j) );
+	    streamlog_out(MESSAGE) << "Cov " << i << " " << j << " " << vertexFO->getCov(i,j) << std::endl ;
           }
         }
 
         ThreeVector vertex;
         vertexFO->getVertexEx(vertex);
-        message<MESSAGE>( log() << "Vertex coordinates " << vertex.getX() << " " << vertex.getY() << " " << vertex.getZ() );
-        message<MESSAGE>( log() << "           errors  " << vertexFO->getError(0) << " " << vertexFO->getError(1) << " " << vertexFO->getError(2) );
+        streamlog_out(MESSAGE) << "Vertex coordinates " << vertex.getX() << " " << vertex.getY() << " " << vertex.getZ() << std::endl ;
+        streamlog_out(MESSAGE) << "           errors  " << vertexFO->getError(0) << " " << vertexFO->getError(1) << " " << vertexFO->getError(2) << std::endl ;
         hErrVtxX->fill (vertexFO->getError(0));
         hErrVtxY->fill (vertexFO->getError(1)); 
         hErrVtxZ->fill (vertexFO->getError(2));
@@ -201,7 +201,7 @@ void SimpleVertexProcessor::processEvent( LCEvent * evt ) {
              trueVtx[0] = mcp->getEndpoint()[0];
              trueVtx[1] = mcp->getEndpoint()[1];
              trueVtx[2] = mcp->getEndpoint()[2];
-             message<MESSAGE>( log() << "found true Kaon decay vertex with coordinates (x,y,z) = (" << trueVtx[0] << ", " << trueVtx[1] << ", " << trueVtx[2] << ")" );
+             streamlog_out(MESSAGE) << "found true Kaon decay vertex with coordinates (x,y,z) = (" << trueVtx[0] << ", " << trueVtx[1] << ", " << trueVtx[2] << ")" << std::endl ;
           } 
         }
         hPullVtxX->fill ((vertex.getX()-trueVtx[0])/vertexFO->getError(0));
@@ -225,6 +225,6 @@ void SimpleVertexProcessor::check( LCEvent* ) {
 }
 
 void SimpleVertexProcessor::end(){
-   message<MESSAGE>( log() << "SimpleVertexProcessor::end()  " << name()) ;
+  streamlog_out(MESSAGE) << "SimpleVertexProcessor::end()  " << name() << std::endl ;
 }
 
