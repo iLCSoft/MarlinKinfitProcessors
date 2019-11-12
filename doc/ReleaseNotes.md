@@ -1,3 +1,14 @@
+# v00-04-01
+
+* 2019-10-07 Remi Ete ([PR#7](https://github.com/iLCSoft/MarlinKinfitProcessors/pull/7))
+  - Fixed usage of streamlog. Using streamlog macros now
+
+* 2019-09-26 Sukeerthi Dharani ([PR#6](https://github.com/iLCSoft/MarlinKinfitProcessors/pull/6))
+  - Neutrino energy correction is implemented using Yasser Radkhorrami's NuCorrector processor
+  https://github.com/yradkhorrami/NuCorrector
+  - ErrorFlow for jet resolution is implemented
+  - Output collection with ISR, H, Z parameters is returned.
+
 # v00-04
 
 * 2017-12-15 Graham Wilson ([PR#4](https://github.com/iLCSoft/MarlinKinfitProcessors/pull/4))
