@@ -626,15 +626,15 @@ void ZH5CFit::processEvent( LCEvent * evt ) { //event start
              SigE2=j->getCovMatrix()[ 9 ];
 
 
-             dth_dpx=(Px*Pz)/(std::pow(P,1.5)*std::sqrt(1-(Pz2/std::pow(P,2))));
-             dth_dpy=(Py*Pz)/(std::pow(P,1.5)*std::sqrt(1-(Pz2/std::pow(P,2))));;
-             dth_dpz=(Px2+Py2-Pz2)/(std::pow(P,1.5)*std::sqrt(1-(Pz2/std::pow(P,2))));;
+	     dth_dpx =	( Px * Pz ) / ( std::pow( P , 3 ) * std::sqrt( 1 - ( Pz2 / std::pow(P,2) ) ) );
+	     dth_dpy =	( Py * Pz ) / ( std::pow( P , 3 ) * std::sqrt( 1 - ( Pz2 / std::pow(P,2) ) ) );
+	     dth_dpz =	std::sqrt( 1 - ( Pz2 / std::pow(P,2) ) ) / P;
              dphi_dpx=(-Py)/(Px2+Py2);
              dphi_dpy=(Px)/(Px2+Py2);
 
-             JetResE=std::sqrt(SigE2)*sigmaScaleFactor;
-             JetResTheta=SigPx2*std::pow(dth_dpx,2)+SigPy2*std::pow(dth_dpy,2)+SigPz2*std::pow(dth_dpz,2)+2*(SigPxSigPy*dth_dpx*dth_dpy)+2*(SigPySigPz*dth_dpy*dth_dpz)+2*(SigPxSigPz*dth_dpx*dth_dpz);
-             JetResPhi=SigPx2*std::pow(dth_dpx,2)+SigPy2*std::pow(dth_dpy,2)+2*(SigPxSigPy*dth_dpx*dth_dpy);
+             JetResE =		std::sqrt(SigE2)*sigmaScaleFactor;
+	     JetResTheta =	std::sqrt( std::fabs( SigPx2 * std::pow( dth_dpx , 2 ) + SigPy2 * std::pow( dth_dpy , 2 ) + SigPz2 * std::pow( dth_dpz , 2 ) + 2 * ( SigPxSigPy * dth_dpx * dth_dpy ) + 2 * ( SigPySigPz * dth_dpy * dth_dpz ) + 2 * ( SigPxSigPz * dth_dpx * dth_dpz ) ) );
+	     JetResPhi =	std::sqrt( std::fabs( SigPx2 * std::pow( dphi_dpx , 2 ) + SigPy2 * std::pow( dphi_dpy , 2 ) + 2 * ( SigPxSigPy * dphi_dpx * dphi_dpy ) ) );
 
 
                 streamlog_out(DEBUG4)  << "SigPx2= " << SigPx2 <<std::endl;
@@ -927,7 +927,6 @@ void ZH5CFit::processEvent( LCEvent * evt ) { //event start
 	      streamlog_out(DEBUG4) << "constraints added"  << std::endl ;
              // don't constrain Higgs mass, just use constraints for convenient mass calculation
              //fitter.addConstraint (h);\
-
              // initial value of Z mass constraint
              if (fabs(startmassZ-91.2) + fabs(startmassH-125.) < bestzvalue) {
                chi2startmassZ = startmassZ;
