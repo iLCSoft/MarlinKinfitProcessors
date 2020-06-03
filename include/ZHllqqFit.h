@@ -295,6 +295,12 @@ class ZHllqqFit : public Processor
 		TH1F					*h_pull_lepton_InvPt{};
 		TH1F					*h_pull_lepton_theta{};
 		TH1F					*h_pull_lepton_phi{};
+		TH1F					*h_error_jet_E{};
+		TH1F					*h_error_jet_Theta{};
+		TH1F					*h_error_jet_Phi{};
+		TH1F					*h_error_lepton_InvpT{};
+		TH1F					*h_error_lepton_Theta{};
+		TH1F					*h_error_lepton_Phi{};
 
 
 		std::string				_name{};

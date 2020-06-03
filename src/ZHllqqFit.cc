@@ -204,8 +204,13 @@ h_pull_jet_theta(NULL),
 h_pull_jet_phi(NULL),
 h_pull_lepton_InvPt(NULL),
 h_pull_lepton_theta(NULL),
-h_pull_lepton_phi(NULL)
-
+h_pull_lepton_phi(NULL),
+h_error_jet_E(NULL),
+h_error_jet_Theta(NULL),
+h_error_jet_Phi(NULL),
+h_error_lepton_InvpT(NULL),
+h_error_lepton_Theta(NULL),
+h_error_lepton_Phi(NULL)
 {
 
 //	modify processor description
@@ -611,7 +616,7 @@ void ZHllqqFit::init()
 	h_nLeptons_nJets->SetDirectory(m_pTFile);
 	h_ISRE_1mcp_fit = new TH2F("h_ISRE_1mcp_fit", "ISR energy MCP(p_{z}^{max}) vs FIT; ISR_{MCP}; ISR_{FIT}", 100, 0., m_isrpzmax * 1.5, 100, 0., m_isrpzmax * 1.5);
 	h_ISRE_1mcp_fit->SetDirectory(m_pTFile);
-	h_ISRE_2mcp_fit = new TH2F("h_ISRE_2mcp_fit", "ISR energy MCP(#Sigma #vec{p}_{z}) vs FIT; ISR_{MCP}; ISR_{FIT}", 100, 0., m_isrpzmax * 1.5, 100, 0., m_isrpzmax * 1.5);
+	h_ISRE_2mcp_fit = new TH2F("h_ISRE_2mcp_fit", "ISR energy MCP(#Sigma E_{ISR}) vs FIT; ISR_{MCP}; ISR_{FIT}", 100, 0., m_isrpzmax * 1.5, 100, 0., m_isrpzmax * 1.5);
 	h_ISRE_2mcp_fit->SetDirectory(m_pTFile);
 	h_ISRpz_1mcp_fit = new TH2F("h_ISRpz_1mcp_fit", "ISR p_{z} MCP(p_{z}^{max}) vs FIT; ISR_{MCP}; ISR_{FIT}", 100, -1.5 * m_isrpzmax , 1.5 * m_isrpzmax , 100, -1.5 * m_isrpzmax , 1.5 * m_isrpzmax);
 	h_ISRpz_1mcp_fit->SetDirectory(m_pTFile);
@@ -623,18 +628,30 @@ void ZHllqqFit::init()
 	h_ISR_pzc_woNu->SetDirectory(m_pTFile);
 	h_ISR_pzc_best = new TH2F("h_ISR_pzc_best", "ISR momentum vs p_{z} constraint (best fit); #Sigma p_{z} [GeV]; p_{z}^{ISR} [GeV]", 80, -40., 40., 80, -40., 40.);
 	h_ISR_pzc_best->SetDirectory(m_pTFile);
-	h_pull_jet_E = new TH1F("h_pull_jet_E", "pull of E for jets after successful fit; pull E [GeV]; n_{jets}", 100, -5., 5.);
+	h_pull_jet_E = new TH1F("h_pull_jet_E", "pull of E for jets after successful fit; pull E [GeV]; n_{jets}", 100, -10., 10.);
 	h_pull_jet_E->SetDirectory(m_pTFile);
-	h_pull_jet_theta = new TH1F("h_pull_jet_theta", "pull of #theta for jets after successful fit; pull #theta; n_{jets}", 100, -5., 5.);
+	h_pull_jet_theta = new TH1F("h_pull_jet_theta", "pull of #theta for jets after successful fit; pull #theta; n_{jets}", 100, -10., 10.);
 	h_pull_jet_theta->SetDirectory(m_pTFile);
-	h_pull_jet_phi = new TH1F("h_pull_jet_phi", "pull of #phi for jets after successful fit; pull #phi; n_{jets}", 100, -5., 5.);
+	h_pull_jet_phi = new TH1F("h_pull_jet_phi", "pull of #phi for jets after successful fit; pull #phi; n_{jets}", 100, -10., 10.);
 	h_pull_jet_phi->SetDirectory(m_pTFile);
-	h_pull_lepton_InvPt = new TH1F("h_pull_lepton_InvPt", "pull of #frac{1}{p_{T}} for leptons after successful fit; pull #frac{1}{p_{T}}; n_{leptons}", 100, -5., 5.);
+	h_pull_lepton_InvPt = new TH1F("h_pull_lepton_InvPt", "pull of #frac{1}{p_{T}} for leptons after successful fit; pull #frac{1}{p_{T}}; n_{leptons}", 100, -10., 10.);
 	h_pull_lepton_InvPt->SetDirectory(m_pTFile);
-	h_pull_lepton_theta = new TH1F("h_pull_lepton_theta", "pull of #theta for leptons after successful fit; pull #theta; n_{leptons}", 100, -5., 5.);
+	h_pull_lepton_theta = new TH1F("h_pull_lepton_theta", "pull of #theta for leptons after successful fit; pull #theta; n_{leptons}", 100, -10., 10.);
 	h_pull_lepton_theta->SetDirectory(m_pTFile);
-	h_pull_lepton_phi = new TH1F("h_pull_lepton_phi", "pull of #phi for leptons after successful fit; pull #phi; n_{leptons}", 100, -5., 5.);
+	h_pull_lepton_phi = new TH1F("h_pull_lepton_phi", "pull of #phi for leptons after successful fit; pull #phi; n_{leptons}", 100, -10., 10.);
 	h_pull_lepton_phi->SetDirectory(m_pTFile);
+	h_error_jet_E = new TH1F("h_error_jet_E", "; #sigma(E_{jet}); n_{jets}", 200, 0., 10.);
+	h_error_jet_E->SetDirectory(m_pTFile);
+	h_error_jet_Theta = new TH1F("h_error_jet_Theta", "; #sigma(#theta_{jet}); n_{jet}", 200, 0., 0.005);
+	h_error_jet_Theta->SetDirectory(m_pTFile);
+	h_error_jet_Phi = new TH1F("h_error_jet_Phi", "; #sigma(#phi_{jet}); n_{jets}", 200, 0., 0.005);
+	h_error_jet_Phi->SetDirectory(m_pTFile);
+	h_error_lepton_InvpT = new TH1F("h_error_lepton_InvpT", "; #sigma(#frac{1}{p_{T,lepton}}); n_{lepton}", 200, 0., 0.0003);
+	h_error_lepton_InvpT->SetDirectory(m_pTFile);
+	h_error_lepton_Theta = new TH1F("h_error_lepton_Theta", "; #sigma(#theta_{lepton}); n_{lepton}", 200, 0., 0.0003);
+	h_error_lepton_Theta->SetDirectory(m_pTFile);
+	h_error_lepton_Phi = new TH1F("h_error_lepton_Phi", "; #sigma(#phi_{lepton}); n_{lepton}", 200, 0., 0.0003);
+	h_error_lepton_Phi->SetDirectory(m_pTFile);
 }
 
 void ZHllqqFit::Clear()
@@ -1452,6 +1469,18 @@ void ZHllqqFit::processEvent( EVENT::LCEvent *pLCEvent )
 		m_ISR_startPx_woNu = FitResultwoNu[76];
 		m_ISR_startPy_woNu = FitResultwoNu[77];
 		m_ISR_startPz_woNu = FitResultwoNu[78];
+		h_error_jet_E->Fill(m_jet_SigmaE[0]);
+		h_error_jet_E->Fill(m_jet_SigmaE[1]);
+		h_error_jet_Theta->Fill(m_jet_SigmaTheta[0]);
+		h_error_jet_Theta->Fill(m_jet_SigmaTheta[1]);
+		h_error_jet_Phi->Fill(m_jet_SigmaPhi[0]);
+		h_error_jet_Phi->Fill(m_jet_SigmaPhi[1]);
+		h_error_lepton_InvpT->Fill(m_lepton_SigmaInvpT[0]);
+		h_error_lepton_InvpT->Fill(m_lepton_SigmaInvpT[1]);
+		h_error_lepton_Theta->Fill(m_lepton_SigmaTheta[0]);
+		h_error_lepton_Theta->Fill(m_lepton_SigmaTheta[1]);
+		h_error_lepton_Phi->Fill(m_lepton_SigmaPhi[0]);
+		h_error_lepton_Phi->Fill(m_lepton_SigmaPhi[1]);
 
 		streamlog_out(DEBUG) << "size of FitResult without neutrino = " << FitResultwoNu.size() << endl;
 		streamlog_out(DEBUG) << "Fit probability without neutrino correction = " << FitResultwoNu[3] << endl;
@@ -2540,6 +2569,12 @@ void ZHllqqFit::end()
 	h_pull_lepton_InvPt->Write();
 	h_pull_lepton_theta->Write();
 	h_pull_lepton_phi->Write();
+	h_error_jet_E->Write();
+	h_error_jet_Theta->Write();
+	h_error_jet_Phi->Write();
+	h_error_lepton_InvpT->Write();
+	h_error_lepton_Theta->Write();
+	h_error_lepton_Phi->Write();
 	m_pTFile->Close();
 	delete m_pTFile;
 
