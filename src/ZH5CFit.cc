@@ -226,7 +226,9 @@ void ZH5CFit::SetZero()
   Py2=0.;
   Pz=0.;
   Pz2=0.;
+  pT2=0.;
   P=0.;
+  P2=0.;
   SigPx2=0.;
   SigPxSigPy=0.;
   SigPxSigPz=0.;
@@ -615,6 +617,7 @@ void ZH5CFit::processEvent( LCEvent * evt ) { //event start
              Py2=std::pow(Py,2);
              Pz=j->getMomentum()[2];
              Pz2=std::pow(Pz,2);
+             pT2=Px2+Py2;
              P=std::sqrt(std::pow(Px,2)+std::pow(Py,2)+std::pow(Pz,2));
 
              SigPx2=j->getCovMatrix()[ 0 ];
@@ -626,15 +629,15 @@ void ZH5CFit::processEvent( LCEvent * evt ) { //event start
              SigE2=j->getCovMatrix()[ 9 ];
 
 
-             dth_dpx=(Px*Pz)/(std::pow(P,1.5)*std::sqrt(1-(Pz2/std::pow(P,2))));
-             dth_dpy=(Py*Pz)/(std::pow(P,1.5)*std::sqrt(1-(Pz2/std::pow(P,2))));;
-             dth_dpz=(Px2+Py2-Pz2)/(std::pow(P,1.5)*std::sqrt(1-(Pz2/std::pow(P,2))));;
-             dphi_dpx=(-Py)/(Px2+Py2);
-             dphi_dpy=(Px)/(Px2+Py2);
+             dth_dpx =	( Px * Pz ) / ( std::pow( P , 2 ) * std::sqrt( pT2 ) );
+             dth_dpy =	( Py * Pz ) / ( std::pow( P , 2 ) * std::sqrt( pT2 ) );
+             dth_dpz =	-std::sqrt( pT2 ) / std::pow( P , 2 );
+             dphi_dpx=	-Py / pT2;
+             dphi_dpy=	Px / pT2 ;
 
-             JetResE=std::sqrt(SigE2)*sigmaScaleFactor;
-             JetResTheta=SigPx2*std::pow(dth_dpx,2)+SigPy2*std::pow(dth_dpy,2)+SigPz2*std::pow(dth_dpz,2)+2*(SigPxSigPy*dth_dpx*dth_dpy)+2*(SigPySigPz*dth_dpy*dth_dpz)+2*(SigPxSigPz*dth_dpx*dth_dpz);
-             JetResPhi=SigPx2*std::pow(dth_dpx,2)+SigPy2*std::pow(dth_dpy,2)+2*(SigPxSigPy*dth_dpx*dth_dpy);
+             JetResE	=	std::sqrt( SigE2 ) * sigmaScaleFactor;
+             JetResTheta=	std::sqrt( std::fabs( SigPx2 * std::pow( dth_dpx , 2 ) + SigPy2 * std::pow( dth_dpy , 2 ) + SigPz2 * std::pow( dth_dpz , 2 ) + 2 * ( SigPxSigPy * dth_dpx * dth_dpy ) + 2 * ( SigPySigPz * dth_dpy * dth_dpz ) + 2 * ( SigPxSigPz * dth_dpx * dth_dpz ) ) );
+             JetResPhi	=	std::sqrt( std::fabs( SigPx2 * std::pow( dphi_dpx , 2 ) + SigPy2 * std::pow( dphi_dpy , 2 ) + 2 * ( SigPxSigPy * dphi_dpx * dphi_dpy ) ) );
 
 
                 streamlog_out(DEBUG4)  << "SigPx2= " << SigPx2 <<std::endl;

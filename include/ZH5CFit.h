@@ -103,7 +103,7 @@ class ZH5CFit : public Processor {
   double bestzvalue{} ;
   double chi2startmassZ{}, chi2startmassH {};
 
-  double Px{}, Px2{}, Py{}, Py2{}, Pz{}, Pz2{}, P{};
+  double Px{}, Px2{}, Py{}, Py2{}, Pz{}, Pz2{}, pT2{}, P{}, P2{};
   double SigPx2{}, SigPxSigPy{}, SigPxSigPz{}, SigPy2{}, SigPySigPz{}, SigPz2{}, SigE2{};
   double dth_dpx{}, dth_dpy{}, dth_dpz{}, dphi_dpx{}, dphi_dpy{}, JetResE{}, JetResTheta{}, JetResPhi{};
 
