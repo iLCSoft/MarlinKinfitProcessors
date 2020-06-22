@@ -622,10 +622,10 @@ void ZH5CFit::processEvent( LCEvent * evt ) { //event start
 
              SigPx2=j->getCovMatrix()[ 0 ];
              SigPxSigPy=j->getCovMatrix()[ 1 ];
-             SigPxSigPz=j->getCovMatrix()[ 2 ];
-             SigPy2=j->getCovMatrix()[ 4 ];
-             SigPySigPz=j->getCovMatrix()[ 5 ];
-             SigPz2=j->getCovMatrix()[ 7 ];
+             SigPxSigPz=j->getCovMatrix()[ 3 ];
+             SigPy2=j->getCovMatrix()[ 2 ];
+             SigPySigPz=j->getCovMatrix()[ 4 ];
+             SigPz2=j->getCovMatrix()[ 5 ];
              SigE2=j->getCovMatrix()[ 9 ];
 
 
