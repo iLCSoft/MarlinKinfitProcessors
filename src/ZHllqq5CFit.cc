@@ -334,7 +334,7 @@ void ZHllqq5CFit::processEvent( LCEvent * evt ) { //event start
       
       // use simple parametrisation or jet covariances?
       if (_errene > 0) {
-        JetResE    = _errene;
+        JetResE    = _errene * std::sqrt(jetvec.e());
         JetResTheta=_errtheta;
         JetResPhi=_errphi;
       }
