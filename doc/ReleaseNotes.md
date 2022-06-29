@@ -1,3 +1,20 @@
+# v00-05
+
+* 2022-06-28 Thomas Madlener ([PR#18](https://github.com/iLCSoft/MarlinKinfitProcessors/pull/18))
+  - Make doxygen cmake config work with newer cmakes (>= 3.17)
+
+* 2022-05-17 JennyListDESY ([PR#17](https://github.com/iLCSoft/MarlinKinfitProcessors/pull/17))
+  - bug fix in ZHllqq5CFit for usage of fixed JER
+
+* 2022-04-20 Jenny List ([PR#16](https://github.com/iLCSoft/MarlinKinfitProcessors/pull/16))
+  - preparations towards a MarlinKinfit tutorial:
+      - fixing CMakeLists.txt to include MarlinUtil
+      - adding an ee->ZH->llqq example with up-to-date ErrorFlow, based on work from Yasser Radkhorrami and Julie Torndal
+  - example steering still assumes availability of two private processors, which are yet to be made available in a next step.
+
+* 2022-04-04 Thomas Madlener ([PR#15](https://github.com/iLCSoft/MarlinKinfitProcessors/pull/15))
+  - Migrate CI to github actions and remove travis CI setup
+
 # v00-04-02
 
 * 2020-06-26 Yasser Radkhorrami ([PR#12](https://github.com/iLCSoft/MarlinKinFitProcessors/pull/12))
