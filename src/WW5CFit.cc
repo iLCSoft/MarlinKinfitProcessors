@@ -45,7 +45,7 @@ double WW5CFit::JetEnergyResolution(double E)
   // 1) comparing jet-level to quark-level energies 
   //    (using MarlinReco/Analysis/RecoMCTruthLink/QuarkJetPairing.cc)
   // double result = std::sqrt(pow(0.6908,2)*(E)+(pow(0.02596,2)*pow(E,2))); 
-  
+   
   // 2) 120%/sqrt(E), gives best convergence of 5C fit on e+e- -> udsc
   double result = 1.2*std::sqrt(E);  
   return result;      
@@ -109,45 +109,10 @@ void WW5CFit::init() {
   b = (double) 0.00464564*( std::log(_ecm*_ecm*3814714.)-1. );
   //= 2*alpha/pi*( ln(s/m_e^2)-1 )
   ISRPzMaxB = std::pow((double)_isrpzmax,b);
-  
-}
-
-void WW5CFit::processRunHeader( LCRunHeader* ) { 
-  _nRun++ ;
-} 
-
-void WW5CFit::processEvent( LCEvent * evt ) { 
-
-    
-    streamlog_out(DEBUG) 
-		      << " processing event " << evt->getEventNumber() 
-		      << "  in run "          << evt->getRunNumber() 
-		      << std::endl ;
-  // this gets called for every event 
-  // usually the working horse ...
 
 #ifdef MARLIN_USE_AIDA
-    
-  // define a histogram pointer
-  static AIDA::IHistogram1D* hRecWMassBest ;    
-  static AIDA::IHistogram1D* hRecWMassAll ;    
-  static AIDA::IHistogram1D* hRecWMassNoFitBest ;    
-  static AIDA::IHistogram1D* hRecWMassNoFitAll ;    
-  static AIDA::IHistogram1D* hTestWMassNoFitAll ;    
-  static AIDA::IHistogram1D* hFitProbBest ;    
-  static AIDA::IHistogram1D* hFitProbAll ;    
-  static AIDA::IHistogram1D* hNItBest ;    
-  static AIDA::IHistogram1D* hNItAll ;    
-  static AIDA::IHistogram1D* hPhotonEnergy ;    
-  static AIDA::IHistogram1D* hJetMass ;    
-  static AIDA::IHistogram1D* hFitError;    
-             
-    streamlog_out(DEBUG) 
-		      << " processing event " << evt->getEventNumber() 
-		      << "  in run "          << evt->getRunNumber() 
-		      << std::endl ;
-  
-  if( isFirstEvent() ) { 
+          
+  //if( isFirstEvent() ) { 
     
     hRecWMassBest = 
       AIDAProcessor::histogramFactory(this)->
@@ -193,15 +158,27 @@ void WW5CFit::processEvent( LCEvent * evt ) {
         createHistogram1D( "hFitError", "Error flag", 10, -0.5, 9.5 ) ; 
     }    
 
-  }
+  //}
 
 #endif   
-   
-  streamlog_out(DEBUG) 
-		      << " processing event " << evt->getEventNumber() 
+  
+}
+
+void WW5CFit::processRunHeader( LCRunHeader* ) { 
+  _nRun++ ;
+} 
+
+void WW5CFit::processEvent( LCEvent * evt ) { 
+
+    
+  // this gets called for every event 
+  // usually the working horse ...
+
+             
+  streamlog_out(DEBUG)
+                      << " processing event " << evt->getEventNumber() 
 		      << "  in run "          << evt->getRunNumber() 
 		      << std::endl ;
-  
   
   HepLorentzVector lvec;
   
