@@ -1,5 +1,7 @@
 #include "TrackResponseAdjuster.h"
 
+#include <cmath>
+
 TrackResponseAdjuster aTrackResponseAdjuster;
 
 
