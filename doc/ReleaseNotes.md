@@ -1,3 +1,13 @@
+# v00-05-01
+
+* 2025-12-16 Thomas Madlener ([PR#21](https://github.com/iLCSoft/MarlinKinfitProcessors/pull/21))
+  - Add a Key4hep based nightly build
+  - Update the clicdp based CI workflows to use a still existing base build
+  - Fix warnings that newer compilers uncover
+
+* 2025-12-16 Juan Miguel Carceller ([PR#20](https://github.com/iLCSoft/MarlinKinfitProcessors/pull/20))
+  - Include a missing <cmath> in TrackResponseAdjuster to fix builds with ROOT 6.38
+
 # v00-05
 
 * 2022-06-28 Thomas Madlener ([PR#18](https://github.com/iLCSoft/MarlinKinfitProcessors/pull/18))
