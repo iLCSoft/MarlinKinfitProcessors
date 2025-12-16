@@ -220,9 +220,10 @@ void MassConstraintFitter::init() {
 
   evtNo=0;
 //  rejects = new TH1D("hrejects","Rejected Events",5,1.0,5.0);
-  if(_fitAnalysis)
+  if(_fitAnalysis) {
 	rootFile = new TFile(m_rootFile.c_str(),"RECREATE");
-        rejects = new TH1D("hrejects","Rejected Events",5,0.5,5.5); 
+  }
+    rejects = new TH1D("hrejects","Rejected Events",5,0.5,5.5);
 ////////////////////////////////////////////////////////
 ///fit and measured analysis tree init
 //_fitAnalysis includes the general analysis from the reconstructed particles

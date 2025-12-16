@@ -387,10 +387,11 @@ void WW5CFit::processEvent( LCEvent * evt ) {
          streamlog_out(DEBUG) << "ECM = " << _ecm  << std::endl ; 
 	 MomentumConstraint ec(1, 0, 0, 0, _ecm);
          ec.setName("sum(E)");
-         for (int i = 0; i < NJETS; ++i)
+         for (int i = 0; i < NJETS; ++i) {
             ec.addToFOList (*(permutedjets[i]));
+         }
         
-            streamlog_out(DEBUG)  << "Value of pxc before fit: " << pxc.getValue() << std::endl ;
+        streamlog_out(DEBUG)  << "Value of pxc before fit: " << pxc.getValue() << std::endl ;
 	    streamlog_out(DEBUG)  << "Value of pyc before fit: " << pyc.getValue() << std::endl ;
 	    streamlog_out(DEBUG)  << "Value of pzc before fit: " << pzc.getValue() << std::endl ;
 	    streamlog_out(DEBUG)  << "Value of ec before fit: " << ec.getValue() << std::endl ;

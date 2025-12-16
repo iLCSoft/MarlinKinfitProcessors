@@ -432,7 +432,7 @@ void ZH5CFit::processEvent( LCEvent * evt ) { //event start
        sldcol = evt->getCollection( _SLDCol );
        streamlog_out(MESSAGE) << _SLDCol << " collection available*********" << std::endl;
        }
-       catch( lcio::DataNotAvailableException e )
+       catch( const lcio::DataNotAvailableException& e )
        {
        streamlog_out(WARNING) << _SLDCol << " collection not available****" << std::endl;
        sldcol = NULL;
@@ -455,7 +455,7 @@ void ZH5CFit::processEvent( LCEvent * evt ) { //event start
        nucol = evt->getCollection( _NuCorrector );
        streamlog_out(MESSAGE) << _NuCorrector << " collection available*********" << std::endl;
        }
-       catch( lcio::DataNotAvailableException e )
+       catch(const lcio::DataNotAvailableException& e )
        {
        streamlog_out(WARNING) << _NuCorrector << " collection not available****" << std::endl;
        nucol = NULL;
@@ -466,10 +466,10 @@ void ZH5CFit::processEvent( LCEvent * evt ) { //event start
        ENuminus=nucol->getParameters().getFloatVal("recENuMinus");
 
 
-       for ( int i=0; i< B_index.size(); i++){
+       for ( auto i=0u; i< B_index.size(); i++){
          streamlog_out(DEBUG) << " Index of B[" << i <<"]: " << B_index[i] << std::endl;
        }
-       for ( int i=0; i< C_index.size(); i++){
+       for ( auto i=0u; i< C_index.size(); i++){
          streamlog_out(DEBUG) << " Index of C[" << i <<"]: " << C_index[i] << std::endl;
        }
 
@@ -479,10 +479,10 @@ void ZH5CFit::processEvent( LCEvent * evt ) { //event start
               if(nSLDB == 1 && nSLDC == 0)  {
                 streamlog_out(DEBUG)  << "SLD-B is 1      ------******************" << std::endl ;
                  if(B_index.size()!=0){
-                   for (int nB=0; nB<B_index.size(); nB++ ){
-                     MCParticle* mcpB = dynamic_cast<MCParticle*>( mccol->getElementAt(B_index[nB])) ;
+                   for (const auto bIndex : B_index) {
+                     MCParticle* mcpB = dynamic_cast<MCParticle*>( mccol->getElementAt(bIndex)) ;
                      MCParticleVec mcpBD = mcpB->getDaughters() ;
-                     for(int nBD=0; nBD<mcpBD.size(); nBD++){
+                     for(auto nBD=0u; nBD<mcpBD.size(); nBD++){
                        // streamlog_out(ERROR)  << "PDG OF DAUGHTER:[" << nBD<< "], is " << mcpBD[nBD]->getPDG() <<std::endl ;
                        if((std::abs(mcpBD[nBD]->getPDG()) == 11) || (std::abs(mcpBD[nBD]->getPDG()) == 13) || (std::abs(mcpBD[nBD]->getPDG()) == 15)){
                          l_theta=0. ; l_phi=0.;
@@ -517,8 +517,8 @@ void ZH5CFit::processEvent( LCEvent * evt ) { //event start
        bestjet_th=0;
        bestjet_phi=0;
        bestjet=1000000;
-       float diff_besttheta;
-       float diff_bestphi;
+       // float diff_besttheta;
+       // float diff_bestphi;
 //-----------------------------------find the jet which should have the neutrino-------------------
 
       if(nSLDB == 1 && nSLDC == 0){// if # SLD-B =1
@@ -548,8 +548,8 @@ void ZH5CFit::processEvent( LCEvent * evt ) { //event start
         }
         if (bestjet_th != bestjet_phi){
            streamlog_out(DEBUG)  << "BESTJET FOR THETA: " <<bestjet_th << " and BESTJET FOR PHI:  " <<bestjet_phi<< " are different " <<std::endl ;
-           diff_besttheta= std::abs(delta_theta[bestjet_phi])-std::abs(delta_theta[bestjet_th]);
-           diff_bestphi=std::abs(delta_phi[bestjet_phi])-std::abs(delta_phi[bestjet_th]);
+           // diff_besttheta= std::abs(delta_theta[bestjet_phi])-std::abs(delta_theta[bestjet_th]);
+           // diff_bestphi=std::abs(delta_phi[bestjet_phi])-std::abs(delta_phi[bestjet_th]);
 
                if (abs(delta_theta[bestjet_phi]) < 0.5 && abs(delta_phi[bestjet_phi]) <0.5){  // 1
                      if ( abs(delta_theta[bestjet_th]) > 0.5 && abs(delta_phi[bestjet_th]) >0.5 ){ //2
@@ -929,7 +929,7 @@ void ZH5CFit::processEvent( LCEvent * evt ) { //event start
 
 	      streamlog_out(DEBUG4) << "constraints added"  << std::endl ;
              // don't constrain Higgs mass, just use constraints for convenient mass calculation
-             //fitter.addConstraint (h);\
+             // fitter.addConstraint (h);
 
              // initial value of Z mass constraint
              if (fabs(startmassZ-91.2) + fabs(startmassH-125.) < bestzvalue) {
