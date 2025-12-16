@@ -72,7 +72,7 @@ class ZHllqq5CFit : public Processor {
     int _fitISR{}, _ifitter{}, _ievttrace{};
     bool _traceall{};
     double _errene{}, _errtheta{}, _errphi{};
-    float _sigmaScaleFactor;
+    float _sigmaScaleFactor{};
     /** Output collections names.
      */
     std::string _PostFitRecoCol{};

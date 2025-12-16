@@ -40,6 +40,11 @@ class ZH5CFit : public Processor {
 
   ZH5CFit() ;
 
+  ZH5CFit(const ZH5CFit&) = delete;
+  ZH5CFit& operator=(const ZH5CFit&) = delete;
+  ZH5CFit( ZH5CFit&&) = delete;
+  ZH5CFit& operator=(ZH5CFit&&) = delete;
+
   /** Called at the begin of the job before anything is read.
    * Use to initialize the processor, e.g. book histograms.
    */
@@ -80,8 +85,8 @@ class ZH5CFit : public Processor {
   double b{}, ISRPzMaxB{};
 
   float prob{}, bestprob{}, bestnit{}, bestmassZ{}, bestmassH{}, beststartmassZ{}, beststartmassH{}, bestphotonenergy{}, startmassZ{}, startmassH{}, variable{};
-  float chi2best;
-  float errorcode;
+  float chi2best{};
+  float errorcode{};
   float Zmomentum[3]{}, Hmomentum[3]{}, ISRmomentum[3]{};
   float Z_Energy{}, H_Energy{};
   float momentum[3]{}, energy{};
@@ -117,8 +122,7 @@ class ZH5CFit : public Processor {
   typedef std::vector<int>		IntVector;
   IntVector B_index{};
   IntVector C_index{};
-  double E_lab;
-  double Elab;
+  double E_lab{};
   int _NuE{};
   int _useErrorFlow{};
   float sigmaScaleFactor{};
