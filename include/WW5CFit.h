@@ -7,6 +7,14 @@
 #include <TFile.h>
 #include <TTree.h>
 #include "TopEventILC.h"
+#ifdef MARLIN_USE_AIDA
+#include <marlin/AIDAProcessor.h>
+#include <AIDA/IHistogramFactory.h>
+#include <AIDA/ICloud1D.h>
+#include <AIDA/IHistogram1D.h>
+#include <AIDA/ITupleFactory.h>
+#include <AIDA/ITuple.h>
+#endif
 
 using namespace lcio ;
 using namespace marlin ;
@@ -86,6 +94,25 @@ class WW5CFit : public Processor {
   int bestperm{}, errorflag{};
   
   TopEventILC* topevent{};
+  
+#ifdef MARLIN_USE_AIDA
+    
+  // define a histogram pointer
+  AIDA::IHistogram1D* hRecWMassBest ;    
+  AIDA::IHistogram1D* hRecWMassAll ;    
+  AIDA::IHistogram1D* hRecWMassNoFitBest ;    
+  AIDA::IHistogram1D* hRecWMassNoFitAll ;    
+  AIDA::IHistogram1D* hTestWMassNoFitAll ;    
+  AIDA::IHistogram1D* hFitProbBest ;    
+  AIDA::IHistogram1D* hFitProbAll ;    
+  AIDA::IHistogram1D* hNItBest ;    
+  AIDA::IHistogram1D* hNItAll ;    
+  AIDA::IHistogram1D* hPhotonEnergy ;    
+  AIDA::IHistogram1D* hJetMass ;    
+  AIDA::IHistogram1D* hFitError;
+
+#endif   
+  
  
 
   //output
