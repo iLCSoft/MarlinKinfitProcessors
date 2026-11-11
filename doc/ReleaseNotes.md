@@ -1,3 +1,11 @@
+# v00-06
+
+* 2026-11-11 Juan Miguel Carceller ([PR#23](https://github.com/iLCSoft/MarlinKinfitProcessors/pull/23))
+  - Require CMake 3.10 to fix `Compatibility with CMake < 3.5 has been removed from CMake.` Also stop requesting the removed `export_library_dependencies()` command.
+
+* 2026-09-10 Thomas Madlener ([PR#22](https://github.com/iLCSoft/MarlinKinfitProcessors/pull/22))
+  - Switch to the latest version of the key4hep-build workflow
+
 # v00-05-01
 
 * 2025-12-16 Thomas Madlener ([PR#21](https://github.com/iLCSoft/MarlinKinfitProcessors/pull/21))
