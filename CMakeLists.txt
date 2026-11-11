@@ -1,7 +1,7 @@
 ########################################################
 # cmake file for building Marlin example Package
 # @author Jan Engels, Desy IT
-CMAKE_MINIMUM_REQUIRED(VERSION 2.6 FATAL_ERROR)
+CMAKE_MINIMUM_REQUIRED(VERSION 3.10 FATAL_ERROR)
 ########################################################
 
 
@@ -95,5 +95,5 @@ INSTALL_SHARED_LIBRARY( ${PROJECT_NAME} DESTINATION lib )
 DISPLAY_STD_VARIABLES()
 
 # generate and install following configuration files
-GENERATE_PACKAGE_CONFIGURATION_FILES( MarlinKinfitProcessorsConfig.cmake MarlinKinfitProcessorsConfigVersion.cmake MarlinKinfitProcessorsLibDeps.cmake )
+GENERATE_PACKAGE_CONFIGURATION_FILES( MarlinKinfitProcessorsConfig.cmake MarlinKinfitProcessorsConfigVersion.cmake )
 
